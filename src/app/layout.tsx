@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import LocalFont from "next/font/local";
+
 import "./globals.css";
 
-const pingFang = LocalFont(
-  {
-    src: "./fonts/PingFang Regular.ttf",
-    variable: "--pingfang-regular",
-  }
-);
+const pingFang = LocalFont({
+  src: "./fonts/PingFang Regular.ttf",
+  variable: "--pingfang-regular",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -21,9 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh">
-      <body className={pingFang.variable}>
-        {children}
-      </body>
+      <body className={pingFang.variable}>{children}</body>
     </html>
   );
 }

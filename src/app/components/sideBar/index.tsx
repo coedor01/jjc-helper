@@ -1,14 +1,13 @@
-'use client'
+"use client";
 
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import BottomNavigation from '@mui/material/BottomNavigation';
-import BottomNavigationAction from '@mui/material/BottomNavigationAction';
-import { usePathname, useRouter } from 'next/navigation';
-import { routes } from './const';
+import * as React from "react";
+import BottomNavigation from "@mui/material/BottomNavigation";
+import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+import { usePathname, useRouter } from "next/navigation";
+import { routes } from "./const";
+import { Paper, SxProps, Theme } from "@mui/material";
 
-
-export default function SideBar() {
+export default function SideBar(sx?: SxProps<Theme>) {
   const [value, setValue] = React.useState("/");
   const pathname = usePathname(); // 使用 usePathname 获取当前路径
   const router = useRouter();
@@ -19,7 +18,15 @@ export default function SideBar() {
   }, [pathname]); // 依赖路径变化
 
   return (
-    <Box sx={{ width: "full" }}>
+    <Paper
+      sx={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        ...sx,
+      }}
+    >
       <BottomNavigation
         showLabels
         value={value}
@@ -27,16 +34,15 @@ export default function SideBar() {
           router.push(newValue);
         }}
       >
-        {
-          routes.map(
-            (item) => <BottomNavigationAction
-              key={item.href}
-              value={item.href}
-              label={item.label}
-            />
-          )
-        }
+        {routes.map((item) => (
+          <BottomNavigationAction
+            key={item.href}
+            value={item.href}
+            label={item.label}
+            sx={{ maxWidth: "none" }}
+          />
+        ))}
       </BottomNavigation>
-    </Box>
-  )
+    </Paper>
+  );
 }
