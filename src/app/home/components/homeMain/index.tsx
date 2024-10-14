@@ -3,12 +3,14 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import { Paper, SxProps, Theme } from "@mui/material";
-import TeamInfo from "./teamInfo";
 
-interface WeekItemOtherQueries {
-  dateStartTs: number;
-  dateEndTs: number;
-}
+import TeamInfo from "./teamInfo";
+import { FilterProvider } from "./context";
+import { WeekItemOtherQueries } from "./const";
+import OperationBar from "./operationBar";
+import FilterDrawer from "./filterDrawer";
+
+
 interface WeekItem {
   label: string;
   queries: WeekItemOtherQueries;
@@ -38,10 +40,12 @@ function getWeekArr(count: number = 7): WeekItem[] {
   for (let i = 0; i < count; i++) {
     const targetDay = currentDay + i;
     let nextWeek = Math.floor(targetDay / 7);
+    const day = targetDay % 7;
     if (currentDay === 0 && targetDay != currentDay) {
       nextWeek++;
+    } else if (currentDay !== 0 && day === 0) {
+      nextWeek--;
     }
-    const day = targetDay % 7;
     const dateStart = new Date();
     const dateEnd = new Date();
     dateStart.setDate(currentDate.getDate() + i);
@@ -94,52 +98,61 @@ export function HomeMain() {
   console.log(JSON.stringify(weekArr));
 
   return (
-    <>
-      <Paper sx={{ borderBottom: 1, borderColor: "divider" }}>
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label="basic tabs example"
-          sx={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            zIndex: 1000,
-            backgroundColor: "#FFFFFF",
-            height: "50px",
-            alignItems: "center",
-          }}
-        >
-          {weekArr.map((item, index) => (
-            <Tab
-              key={index}
-              label={item.label}
-              sx={{
-                flex: 1,
-                fontSize: 12,
-                padding: "2px",
-                minWidth: "50px",
-                minHeight: "none",
-              }}
-              {...a11yProps(index)}
+    <FilterProvider>
+      <Box>
+
+        <Paper sx={{ borderBottom: 1, borderColor: "divider" }}>
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label="basic tabs example"
+            sx={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              zIndex: 1000,
+              backgroundColor: "#FFFFFF",
+              height: "50px",
+              alignItems: "center",
+            }}
+          >
+            {weekArr.map((item, index) => (
+              <Tab
+                key={index}
+                label={item.label}
+                sx={{
+                  flex: 1,
+                  fontSize: 12,
+                  padding: "2px",
+                  minWidth: "50px",
+                  minHeight: "none",
+                }}
+                {...a11yProps(index)}
+              />
+            ))}
+          </Tabs>
+        </Paper>
+
+        {weekArr.map((item, index) => (
+          <CustomTabPanel
+            key={index}
+            value={value}
+            index={index}
+            sx={{
+              zIndex: 10,
+            }}
+          >
+            <TeamInfo
+              queries={item.queries}
             />
-          ))}
-        </Tabs>
-      </Paper>
-      {weekArr.map((item, index) => (
-        <CustomTabPanel
-          key={index}
-          value={value}
-          index={index}
-          sx={{
-            zIndex: 10,
-            paddingTop: "50px",
-          }}
-        >
-          <TeamInfo />
-        </CustomTabPanel>
-      ))}
-    </>
+          </CustomTabPanel>
+        ))}
+
+      </Box>
+      <OperationBar />
+      <FilterDrawer />
+
+    </FilterProvider>
   );
 }

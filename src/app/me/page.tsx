@@ -1,7 +1,11 @@
 import SideBar from "@/app/components/sideBar";
+import { routes } from "../const";
 
 export default function Me() {
   return (
-    <SideBar></SideBar>
+    <SideBar
+      routes={routes}
+      currentRoute="/me"
+    />
   )
 }

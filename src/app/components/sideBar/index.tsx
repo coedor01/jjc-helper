@@ -4,11 +4,23 @@ import * as React from "react";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import { usePathname, useRouter } from "next/navigation";
-import { routes } from "./const";
-import { Paper, SxProps, Theme } from "@mui/material";
+import { Paper } from "@mui/material";
+import { SxProps, Theme } from "@mui/system";
 
-export default function SideBar(sx?: SxProps<Theme>) {
-  const [value, setValue] = React.useState("/");
+interface Routes {
+  label: string,
+  href: string,
+}
+
+
+interface SideBarProps {
+  sx?: SxProps<Theme>;
+  routes: Routes[];
+  currentRoute: string;
+}
+
+const SideBar: React.FC<SideBarProps> = ({ sx, routes, currentRoute }) => {
+  const [value, setValue] = React.useState(currentRoute);
   const pathname = usePathname(); // 使用 usePathname 获取当前路径
   const router = useRouter();
 
@@ -46,3 +58,5 @@ export default function SideBar(sx?: SxProps<Theme>) {
     </Paper>
   );
 }
+
+export default SideBar;
