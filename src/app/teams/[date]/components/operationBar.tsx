@@ -2,14 +2,15 @@ import * as React from "react";
 import { Fab } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import OperationBarPanel from "@/app/components/operationBarPanel";
-import FilterContext from "./context";
+import Context from "../context";
 
 const OperationBar: React.FC = () => {
-  const { open, setOpen } = React.useContext(FilterContext);
+  const {
+    setDrawOpen,
+  } = React.useContext(Context);
 
   const handleOnClickFilter = () => {
-    setOpen(true)
-    console.log(`open=${open}`)
+    setDrawOpen(true)
   }
 
   return (

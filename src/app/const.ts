@@ -1,11 +1,11 @@
 export const routes = [
   {
-    label: "大厅",
-    href: "/home",
+    label: "招募",
+    href: "/teams",
   },
   {
     label: "计划",
-    href: "/schedule",
+    href: "/schedules",
   },
   {
     label: "我的",

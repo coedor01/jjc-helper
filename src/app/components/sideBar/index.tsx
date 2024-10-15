@@ -25,8 +25,9 @@ const SideBar: React.FC<SideBarProps> = ({ sx, routes, currentRoute }) => {
   const router = useRouter();
 
   React.useEffect(() => {
-    setValue(pathname); // 在每次路径变化时更新值
-    console.debug(`跳转至${pathname}`);
+    const rootPathname = `/${pathname.split('/')[1]}`
+    setValue(rootPathname); // 在每次路径变化时更新值
+    console.debug(`跳转至${pathname}，根路径${rootPathname}`);
   }, [pathname]); // 依赖路径变化
 
   return (

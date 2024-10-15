@@ -6,9 +6,13 @@ interface Option {
   value: string,
 }
 
+interface Title {
+  label: string,
+  value: string,
+}
 
 interface OptionGroup {
-  label: string,
+  title: Title,
   options: Option[]
 }
 
@@ -22,14 +26,14 @@ interface ChipCheckboxGroupProps {
 const ChipCheckboxGroup: React.FC<ChipCheckboxGroupProps> = (
   { group, values, onClick }
 ) => {
-  console.log(`values=${values}`);
+
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, p: 2 }}>
-      <Box key={group.label} sx={{ textAlign: 'left' }}>
+      <Box key={group.title.label} sx={{ textAlign: 'left' }}>
         {/* Group Label */}
         <Typography variant="button" gutterBottom sx={{ display: 'block' }}>
-          {group.label}
+          {group.title.label}
         </Typography>
         {/* Group Options */}
         <Box
@@ -40,12 +44,12 @@ const ChipCheckboxGroup: React.FC<ChipCheckboxGroupProps> = (
             justifyContent: 'flex-start', // Align to the left
           }}
         >
-          {group.options.map((option) => (
+          {group.options.map((option, index) => (
             <Chip
-              key={option.value}
+              key={index}
               label={option.label} // Display label
               clickable
-              onClick={() => onClick(option.value)} // Use value for state and requests
+              onClick={() => onClick(option.value)}
               sx={{
                 width: '80px', // Fixed width for each Chip (enough for 5 Chinese characters)
                 height: '36px', // Set a standard height for the Chip

@@ -1,25 +1,30 @@
+"use client";
+
 import * as React from "react";
+import { redirect, usePathname, useRouter } from "next/navigation";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import { Paper, SxProps, Theme } from "@mui/material";
 
-import TeamInfo from "./teamInfo";
-import { FilterProvider } from "./context";
-import { WeekItemOtherQueries } from "./const";
-import OperationBar from "./operationBar";
-import FilterDrawer from "./filterDrawer";
+import { ContextProvider } from "./context";
+import { DEFAULT_QUERIES } from "./const";
+import TeamInfo from "./components/teamInfo";
+import OperationBar from "./components/operationBar";
+import FilterDrawer from "./components/filterDrawer";
+import { ROOT_PATH } from "../const";
+import useQueryHook from "@/hooks/query";
 
 
 interface WeekItem {
   label: string;
-  queries: WeekItemOtherQueries;
+  value: string;
 }
 
 interface TabPanelProps {
   children?: React.ReactNode;
-  index: number;
-  value: number;
+  index: string;
+  value: string;
   sx: SxProps<Theme>;
 }
 
@@ -33,8 +38,8 @@ function getWeekArr(count: number = 7): WeekItem[] {
     "周五",
     "周六",
   ];
-  const currentDate = new Date();
-  const currentDay = currentDate.getDay();
+  const now = new Date();
+  const currentDay = now.getDay();
 
   const weekArr: WeekItem[] = [];
   for (let i = 0; i < count; i++) {
@@ -46,17 +51,12 @@ function getWeekArr(count: number = 7): WeekItem[] {
     } else if (currentDay !== 0 && day === 0) {
       nextWeek--;
     }
-    const dateStart = new Date();
-    const dateEnd = new Date();
-    dateStart.setDate(currentDate.getDate() + i);
-    dateEnd.setDate(currentDate.getDate() + i + 1);
+
+    const [y, m, d] = [now.getFullYear(), now.getMonth() + 1, now.getDate() + i];
 
     weekArr.push({
       label: "下".repeat(nextWeek) + weekChinese[day],
-      queries: {
-        dateStartTs: dateStart.getTime(),
-        dateEndTs: dateEnd.getTime(),
-      },
+      value: `${y}-${m}-${d}`,
     });
   }
 
@@ -79,31 +79,40 @@ function CustomTabPanel(props: TabPanelProps) {
   );
 }
 
-function a11yProps(index: number) {
+function a11yProps(index: string) {
   return {
     id: `simple-tab-${index}`,
     "aria-controls": `simple-tabpanel-${index}`,
   };
 }
 
-export function HomeMain() {
-  const [value, setValue] = React.useState(0);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
+export default function TeamsOfDate({ params }: { params: { date: string } }) {
+  const {
+    searchParams,
+    upsertMultiQueryString,
+  } = useQueryHook()
+  const pathname = usePathname();
+  if (searchParams.toString() === "") {
+    const params = upsertMultiQueryString(DEFAULT_QUERIES);
+    redirect(pathname + "?" + params);
+  }
 
   const weekArr = getWeekArr();
-
   console.log(JSON.stringify(weekArr));
 
-  return (
-    <FilterProvider>
-      <Box>
+  const router = useRouter();
 
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    router.push(`${ROOT_PATH}/${newValue}?${searchParams.toString()}`)
+  };
+
+  return (
+    <ContextProvider>
+      <Box>
         <Paper sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
-            value={value}
+            value={params.date}
             onChange={handleChange}
             aria-label="basic tabs example"
             sx={{
@@ -120,6 +129,7 @@ export function HomeMain() {
             {weekArr.map((item, index) => (
               <Tab
                 key={index}
+                value={item.value}
                 label={item.label}
                 sx={{
                   flex: 1,
@@ -128,7 +138,7 @@ export function HomeMain() {
                   minWidth: "50px",
                   minHeight: "none",
                 }}
-                {...a11yProps(index)}
+                {...a11yProps(item.value)}
               />
             ))}
           </Tabs>
@@ -137,15 +147,14 @@ export function HomeMain() {
         {weekArr.map((item, index) => (
           <CustomTabPanel
             key={index}
-            value={value}
-            index={index}
+            value={params.date}
+            index={item.value}
             sx={{
+              paddingTop: "50px",
               zIndex: 10,
             }}
           >
-            <TeamInfo
-              queries={item.queries}
-            />
+            <TeamInfo />
           </CustomTabPanel>
         ))}
 
@@ -153,6 +162,6 @@ export function HomeMain() {
       <OperationBar />
       <FilterDrawer />
 
-    </FilterProvider>
+    </ContextProvider>
   );
 }
