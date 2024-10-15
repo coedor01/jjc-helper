@@ -170,8 +170,8 @@ async function createTeams() {
   const datas = [];
 
   for (let i = 1; i < TEAM_COUNT + 1; i++) {
-    const teamTypeId = TEAM_COUNT % (TEAM_TYPE_ARRAYS.length + 1);
-    const userId = TEAM_COUNT % (USER_COUNT + 1);
+    const teamTypeId = i % TEAM_TYPE_ARRAYS.length + 1;
+    const userId = i % USER_COUNT + 1;
     datas.push({
       id: i,
       startAt: getRandomFutureHour(),
@@ -186,26 +186,31 @@ async function createTeams() {
 
 async function createTeamMembers() {
   const datas = [];
+  let id = 1;
 
   for (let i = 1; i < TEAM_COUNT + 1; i++) {
-    const teamTypeId = TEAM_COUNT % (TEAM_TYPE_ARRAYS.length + 1);
-    const userId = TEAM_COUNT % (USER_COUNT + 1);
+    const teamTypeId = i % TEAM_TYPE_ARRAYS.length + 1;
+    const userId = i % USER_COUNT + 1;
     datas.push({
+      id: id,
       teamId: i,
       currentScore: getRandomInt(1000, 3000),
       maxScore: getRandomInt(1000, 3000),
       playDuration: 60,
       gameRoleId: userId,
     })
+    id++;
 
     for (let j = 0; j < TEAM_TYPE_ARRAYS[teamTypeId - 1].maxMemberCount - 1; j++) {
       datas.push({
+        id: id,
         teamId: i,
         currentScore: getRandomInt(1000, 3000),
         maxScore: getRandomInt(1000, 3000),
         playDuration: 60,
         gameRoleId: getRandomInt(1, USER_COUNT),
       })
+      id++;
     }
   }
   console.log(datas);
