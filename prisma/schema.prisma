@@ -60,15 +60,23 @@ model GameRole {
   serverId   Int
 }
 
+model ClientType {
+  id    Int    @id @default(autoincrement())
+  label String @db.VarChar(255)
+  Team  Team[]
+}
+
 model Team {
   id                     Int          @id @default(autoincrement())
   startAt                Int // 开始时间
   confirmAdvancedMinutes Int // 提前多少分钟确认
+  clientType             ClientType   @relation(fields: [clientTypeId], references: [id])
   owner                  User         @relation(fields: [userId], references: [id])
   type                   TeamType     @relation(fields: [teamTypeId], references: [id])
   userId                 Int
   TeamMember             TeamMember[]
   teamTypeId             Int
+  clientTypeId           Int
 }
 
 model TeamType {
@@ -84,6 +92,7 @@ model TeamMember {
   currentScore Int // 当前分
   maxScore     Int // 最高分
   playDuration Int // 可以玩多久
+  confirmed    Boolean  @default(false) // 已确认
   role         GameRole @relation(fields: [gameRoleId], references: [id]) // 游戏角色
   team         Team     @relation(fields: [teamId], references: [id])
   teamId       Int

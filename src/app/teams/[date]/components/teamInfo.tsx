@@ -3,19 +3,19 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Divider from "@mui/material/Divider";
-import { useSearchParams } from "next/navigation";
+import { Team } from "@prisma/client";
 
+interface Props {
+  items: Team[],
+}
 
-const TeamInfo: React.FC = () => {
-  const searchParams = useSearchParams();
-  const paramsArray = Array.from(searchParams.entries());
-
+const TeamInfo: React.FC<Props> = ({ items }) => {
   return (
     <List aria-label="mailbox folders">
-      {paramsArray.map(([name, value], key) => (
+      {items.map((item, key) => (
         <>
           <ListItem key={key}>
-            <ListItemText primary={`${name}: ${value}`} />
+            <ListItemText primary={JSON.stringify(item)} />
           </ListItem>
           <Divider component="li" />
         </>
@@ -23,4 +23,5 @@ const TeamInfo: React.FC = () => {
     </List>
   );
 }
+
 export default TeamInfo;

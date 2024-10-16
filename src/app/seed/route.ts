@@ -109,6 +109,17 @@ const TEAM_TYPE_ARRAYS = [
 
 const TEAM_COUNT = 210;
 
+const CLIENT_TYPE_ARRAYS = [
+  { id: 1, label: "旗舰" },
+  { id: 2, label: "无界" },
+]
+
+async function createClientTypes() {
+  await prisma.clientType.createMany({
+    data: CLIENT_TYPE_ARRAYS,
+  })
+}
+
 async function createServers() {
   const items = await prisma.server.createMany({
     data: SERVER_ARRAYS,
@@ -178,6 +189,7 @@ async function createTeams() {
       confirmAdvancedMinutes: 30,
       userId: userId,
       teamTypeId: teamTypeId,
+      clientTypeId: getRandomInt(1, 2),
     });
   }
 
@@ -198,6 +210,7 @@ async function createTeamMembers() {
       maxScore: getRandomInt(1000, 3000),
       playDuration: 60,
       gameRoleId: userId,
+      confirmed: Boolean(getRandomInt(0, 1)),
     })
     id++;
 
@@ -209,6 +222,7 @@ async function createTeamMembers() {
         maxScore: getRandomInt(1000, 3000),
         playDuration: 60,
         gameRoleId: getRandomInt(1, USER_COUNT),
+        confirmed: Boolean(getRandomInt(0, 1)),
       })
       id++;
     }
@@ -240,8 +254,10 @@ export async function GET() {
   // });
   try {
     await clearDatabase();
+    // 创建客户端数据
+    await createClientTypes();
 
-    // 创建服务器
+    // 创建服务器数据
     await createServers();
 
     // 创建招募类型数据
