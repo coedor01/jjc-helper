@@ -32,3 +32,10 @@ export function getSTimestamp(date: Date) {
 export function getMSTimestamp(date: Date) {
   return date.getTime();
 }
+
+
+export function stringToDate(dateString: string, hoursDelta: number): Date {
+  const date = new Date(dateString);
+  date.setHours(date.getHours() - hoursDelta);
+  return date
+}

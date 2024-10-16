@@ -3,7 +3,7 @@ import { Fab } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import OperationBarPanel from "@/app/components/operationBarPanel";
 import { Drawer } from '@mui/material';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import ChipCheckboxGroup from '@/app/components/chipCheckBoxGroup';
 import { ROOT_PATH } from "@/app/teams/const";
 import { ClientTypeEnum, TeamTypeEnum, TeamsQueries } from '@/app/teams/[date]/const';
@@ -21,8 +21,8 @@ const FilterDrawer: React.FC<DrawerProps> = ({
   open, setOpen, params, searchParams
 }) => {
 
-  const [teamTypeValues, setTeamTypeValues] = React.useState<string[]>([searchParams.teamType]);
-  const [clientTypeValues, setClientTypeValues] = React.useState<string[]>([searchParams.clientType]);
+  const [teamTypeValues, setTeamTypeValues] = React.useState<string[]>(searchParams.teamType.split(","));
+  const [clientTypeValues, setClientTypeValues] = React.useState<string[]>(searchParams.clientType.split(","));
 
 
   const handleToggleTeamTypeChipCheckbox = (value: string) => {
