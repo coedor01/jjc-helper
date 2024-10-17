@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import LocalFont from "next/font/local";
 
 import "./globals.css";
+import { Box } from "@mui/material";
 const pingFang = LocalFont({
   src: "./fonts/PingFang Regular.ttf",
   variable: "--pingfang-regular",
@@ -24,7 +25,16 @@ export default function RootLayout({
   return (
     <html lang="zh">
       <body className={pingFang.variable}>
-        {children}
+        <Box
+          sx={{
+            backgroundColor: 'grey.100',  // 背景颜色
+            minHeight: '100vh',          // 确保背景颜色充满整个屏幕高度
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          {children}
+        </Box>
       </body>
     </html>
   );

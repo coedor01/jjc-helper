@@ -1,6 +1,6 @@
-import { PrismaClient, XinFa, Server, User, TeamType } from '@prisma/client';
-import { faker } from '@faker-js/faker';
-import prisma from '@/client';
+import { PrismaClient, XinFa, Server, User, TeamType } from "@prisma/client";
+import { faker } from "@faker-js/faker";
+import prisma from "@/client";
 
 function getRandomInt(min: number, max: number) {
   min = Math.ceil(min);
@@ -54,36 +54,72 @@ const SERVER_ARRAYS = [
 ];
 const XINFA_ARRAYS = [
   { id: 1, name: "冰心诀", icon: "https://img.jx3box.com/image/xf/10081.png" },
-  { id: 2, name: "云裳心经", icon: "https://img.jx3box.com/image/xf/10080.png" },
+  {
+    id: 2,
+    name: "云裳心经",
+    icon: "https://img.jx3box.com/image/xf/10080.png",
+  },
   { id: 3, name: "花间游", icon: "https://img.jx3box.com/image/xf/10021.png" },
-  { id: 4, name: "离经易道", icon: "https://img.jx3box.com/image/xf/10028.png" },
-  { id: 5, name: "毒经", icon: "https://img.jx3box.com/image/xf/10175.png", },
+  {
+    id: 4,
+    name: "离经易道",
+    icon: "https://img.jx3box.com/image/xf/10028.png",
+  },
+  { id: 5, name: "毒经", icon: "https://img.jx3box.com/image/xf/10175.png" },
   { id: 6, name: "补天诀", icon: "https://img.jx3box.com/image/xf/10176.png" },
-  { id: 7, name: "莫问", icon: "https://img.jx3box.com/image/xf/10447.png", },
-  { id: 8, name: "相知", icon: "https://img.jx3box.com/image/xf/10448.png", },
-  { id: 9, name: "无方", icon: "https://img.jx3box.com/image/xf/10627.png", },
-  { id: 10, name: "灵素", icon: "https://img.jx3box.com/image/xf/10626.png", },
-  { id: 11, name: "傲血战意", icon: "https://img.jx3box.com/image/xf/10026.png" },
+  { id: 7, name: "莫问", icon: "https://img.jx3box.com/image/xf/10447.png" },
+  { id: 8, name: "相知", icon: "https://img.jx3box.com/image/xf/10448.png" },
+  { id: 9, name: "无方", icon: "https://img.jx3box.com/image/xf/10627.png" },
+  { id: 10, name: "灵素", icon: "https://img.jx3box.com/image/xf/10626.png" },
+  {
+    id: 11,
+    name: "傲血战意",
+    icon: "https://img.jx3box.com/image/xf/10026.png",
+  },
   { id: 12, name: "铁牢律", icon: "https://img.jx3box.com/image/xf/10062.png" },
   { id: 13, name: "易筋经", icon: "https://img.jx3box.com/image/xf/10003.png" },
   { id: 14, name: "洗髓经", icon: "https://img.jx3box.com/image/xf/10002.png" },
-  { id: 15, name: "焚影圣诀", icon: "https://img.jx3box.com/image/xf/10242.png" },
-  { id: 16, name: "明尊琉璃体", icon: "https://img.jx3box.com/image/xf/10243.png" },
+  {
+    id: 15,
+    name: "焚影圣诀",
+    icon: "https://img.jx3box.com/image/xf/10242.png",
+  },
+  {
+    id: 16,
+    name: "明尊琉璃体",
+    icon: "https://img.jx3box.com/image/xf/10243.png",
+  },
   { id: 17, name: "分山劲", icon: "https://img.jx3box.com/image/xf/10390.png" },
   { id: 18, name: "铁骨衣", icon: "https://img.jx3box.com/image/xf/10389.png" },
   { id: 19, name: "紫霞功", icon: "https://img.jx3box.com/image/xf/10014.png" },
-  { id: 20, name: "太虚剑意", icon: "https://img.jx3box.com/image/xf/10015.png" },
-  { id: 21, name: "天罗诡道", icon: "https://img.jx3box.com/image/xf/10225.png" },
+  {
+    id: 20,
+    name: "太虚剑意",
+    icon: "https://img.jx3box.com/image/xf/10015.png",
+  },
+  {
+    id: 21,
+    name: "天罗诡道",
+    icon: "https://img.jx3box.com/image/xf/10225.png",
+  },
   { id: 22, name: "惊羽诀", icon: "https://img.jx3box.com/image/xf/10224.png" },
   { id: 23, name: "问水诀", icon: "https://img.jx3box.com/image/xf/10144.png" },
-  { id: 24, name: "山居剑意", icon: "https://img.jx3box.com/image/xf/10145.png" },
+  {
+    id: 24,
+    name: "山居剑意",
+    icon: "https://img.jx3box.com/image/xf/10145.png",
+  },
   { id: 25, name: "笑尘诀", icon: "https://img.jx3box.com/image/xf/10268.png" },
   { id: 26, name: "北傲诀", icon: "https://img.jx3box.com/image/xf/10464.png" },
   { id: 27, name: "凌海诀", icon: "https://img.jx3box.com/image/xf/10533.png" },
   { id: 28, name: "隐龙诀", icon: "https://img.jx3box.com/image/xf/10585.png" },
   { id: 29, name: "太玄经", icon: "https://img.jx3box.com/image/xf/10615.png" },
   { id: 30, name: "孤锋诀", icon: "https://img.jx3box.com/image/xf/10698.png" },
-  { id: 31, name: "山海心诀", icon: "https://img.jx3box.com/image/xf/10756.png" },
+  {
+    id: 31,
+    name: "山海心诀",
+    icon: "https://img.jx3box.com/image/xf/10756.png",
+  },
   { id: 32, name: "周天功", icon: "https://img.jx3box.com/image/xf/10786.png" },
 ];
 const TEAM_TYPE_ARRAYS = [
@@ -103,7 +139,7 @@ const TEAM_TYPE_ARRAYS = [
     id: 3,
     label: "名剑大会5对5",
     value: "5V5",
-    maxMemberCount: 3,
+    maxMemberCount: 5,
   },
 ];
 
@@ -112,12 +148,12 @@ const TEAM_COUNT = 210;
 const CLIENT_TYPE_ARRAYS = [
   { id: 1, label: "旗舰" },
   { id: 2, label: "无界" },
-]
+];
 
 async function createClientTypes() {
   await prisma.clientType.createMany({
     data: CLIENT_TYPE_ARRAYS,
-  })
+  });
 }
 
 async function createServers() {
@@ -137,8 +173,8 @@ async function createTeamTypes() {
 async function createXinFas() {
   const items = await prisma.xinFa.createMany({
     data: XINFA_ARRAYS,
-  })
-  return items
+  });
+  return items;
 }
 
 async function createUsers() {
@@ -150,12 +186,12 @@ async function createUsers() {
       username: faker.internet.userName(),
       password: "123456Zz",
       name: faker.person.fullName(),
-    })
+    });
   }
 
   await prisma.user.createMany({
     data: datas,
-  })
+  });
 }
 
 async function createGameRoles() {
@@ -168,21 +204,18 @@ async function createGameRoles() {
       userId: i,
       xinFaId: getRandomInt(1, XINFA_ARRAYS.length),
       serverId: getRandomInt(1, SERVER_ARRAYS.length),
-    })
+    });
   }
 
-  await prisma.gameRole.createMany({ data: datas })
-
+  await prisma.gameRole.createMany({ data: datas });
 }
 
-
 async function createTeams() {
-
   const datas = [];
 
   for (let i = 1; i < TEAM_COUNT + 1; i++) {
-    const teamTypeId = i % TEAM_TYPE_ARRAYS.length + 1;
-    const userId = i % USER_COUNT + 1;
+    const teamTypeId = (i % TEAM_TYPE_ARRAYS.length) + 1;
+    const userId = (i % USER_COUNT) + 1;
     datas.push({
       id: i,
       startAt: getRandomFutureHour(),
@@ -193,7 +226,7 @@ async function createTeams() {
     });
   }
 
-  await prisma.team.createMany({ data: datas })
+  await prisma.team.createMany({ data: datas });
 }
 
 async function createTeamMembers() {
@@ -201,8 +234,8 @@ async function createTeamMembers() {
   let id = 1;
 
   for (let i = 1; i < TEAM_COUNT + 1; i++) {
-    const teamTypeId = i % TEAM_TYPE_ARRAYS.length + 1;
-    const userId = i % USER_COUNT + 1;
+    const teamTypeId = (i % TEAM_TYPE_ARRAYS.length) + 1;
+    const userId = (i % USER_COUNT) + 1;
     datas.push({
       id: id,
       teamId: i,
@@ -211,10 +244,14 @@ async function createTeamMembers() {
       playDuration: 60,
       gameRoleId: userId,
       confirmed: Boolean(getRandomInt(0, 1)),
-    })
+    });
     id++;
 
-    for (let j = 0; j < getRandomInt(0, TEAM_TYPE_ARRAYS[teamTypeId - 1].maxMemberCount - 1); j++) {
+    for (
+      let j = 0;
+      j < getRandomInt(0, TEAM_TYPE_ARRAYS[teamTypeId - 1].maxMemberCount - 1);
+      j++
+    ) {
       datas.push({
         id: id,
         teamId: i,
@@ -223,28 +260,27 @@ async function createTeamMembers() {
         playDuration: 60,
         gameRoleId: getRandomInt(1, USER_COUNT),
         confirmed: Boolean(getRandomInt(0, 1)),
-      })
+      });
       id++;
     }
   }
   console.log(datas);
 
-
-  await prisma.teamMember.createMany({ data: datas })
+  await prisma.teamMember.createMany({ data: datas });
 }
 
 async function clearDatabase() {
   const tablenames = await prisma.$queryRaw<
     Array<{ tablename: string }>
-  >`SELECT tablename FROM pg_tables WHERE schemaname='public'`
+  >`SELECT tablename FROM pg_tables WHERE schemaname='public'`;
 
   const tables = tablenames
     .map(({ tablename }) => tablename)
-    .filter((name) => name !== '_prisma_migrations')
+    .filter((name) => name !== "_prisma_migrations")
     .map((name) => `"public"."${name}"`)
-    .join(', ')
+    .join(", ");
 
-  await prisma.$executeRawUnsafe(`TRUNCATE TABLE ${tables};`)
+  await prisma.$executeRawUnsafe(`TRUNCATE TABLE ${tables};`);
 }
 
 export async function GET() {
@@ -278,10 +314,10 @@ export async function GET() {
     // 创建队伍成员
     await createTeamMembers();
 
-    console.log('Transaction successful, all operations completed.');
+    console.log("Transaction successful, all operations completed.");
     return Response.json({ msg: "OK!" }, { status: 200 });
   } catch (error) {
-    console.error('Transaction failed, rolling back changes:', error);
+    console.error("Transaction failed, rolling back changes:", error);
     return Response.json({ error }, { status: 500 });
   } finally {
     await prisma.$disconnect(); // 断开数据库连接

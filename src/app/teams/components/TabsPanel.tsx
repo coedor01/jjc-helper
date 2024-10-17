@@ -7,10 +7,8 @@ import Box from "@mui/material/Box";
 import { Paper, SxProps, Theme } from "@mui/material";
 import { redirect, usePathname, useRouter } from "next/navigation";
 import useQueryHook from "@/hooks/query";
-import { DEFAULT_QUERIES } from "../const";
-import { ROOT_PATH } from "../../const";
-
-
+import { DEFAULT_QUERIES, TeamsQueries } from "../const";
+import { ROOT_PATH } from "../const";
 
 interface WeekItem {
   label: string;
@@ -20,7 +18,7 @@ interface WeekItem {
 interface TabPanelProps {
   children?: React.ReactNode;
   index: string;
-  value: string;
+  value: string | null;
   sx: SxProps<Theme>;
 }
 
@@ -48,7 +46,11 @@ function getWeekArr(count: number = 7): WeekItem[] {
       nextWeek--;
     }
 
-    const [y, m, d] = [now.getFullYear(), now.getMonth() + 1, now.getDate() + i];
+    const [y, m, d] = [
+      now.getFullYear(),
+      now.getMonth() + 1,
+      now.getDate() + i,
+    ];
 
     weekArr.push({
       label: "下".repeat(nextWeek) + weekChinese[day],
@@ -83,17 +85,14 @@ function a11yProps(index: string) {
 }
 
 interface Props {
-  params: { date: string };
   searchParams: { [key: string]: string | string[] | undefined };
-  children: React.ReactNode
+  children: React.ReactNode;
+  sx?: SxProps<Theme>;
 }
 
-
-const TabsPanel: React.FC<Props> = ({ params, children }) => {
-  const {
-    searchParams,
-    upsertMultiQueryString,
-  } = useQueryHook()
+const TabsPanel: React.FC<Props> = ({ children, sx }) => {
+  const { searchParams, upsertQueryString, upsertMultiQueryString } =
+    useQueryHook();
 
   const pathname = usePathname();
   if (searchParams.toString() === "") {
@@ -107,14 +106,15 @@ const TabsPanel: React.FC<Props> = ({ params, children }) => {
   const router = useRouter();
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    router.push(`${ROOT_PATH}/${newValue}?${searchParams.toString()}`)
+    const params = upsertQueryString(TeamsQueries.DATE, newValue);
+    router.push(`${ROOT_PATH}?${params}`);
   };
 
   return (
-    <Box>
+    <Box sx={sx}>
       <Paper sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
-          value={params.date}
+          value={searchParams.get("date")}
           onChange={handleChange}
           aria-label="basic tabs example"
           sx={{
@@ -149,19 +149,18 @@ const TabsPanel: React.FC<Props> = ({ params, children }) => {
       {weekArr.map((item, index) => (
         <CustomTabPanel
           key={index}
-          value={params.date}
+          value={searchParams.get("date")}
           index={item.value}
           sx={{
-            paddingTop: "50px",
+            margin: "50px 0 80px 0",
             zIndex: 10,
           }}
         >
           {children}
         </CustomTabPanel>
       ))}
-
     </Box>
-  )
-}
+  );
+};
 
 export default TabsPanel;
