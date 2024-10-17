@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 import ChipCheckboxGroup from "@/app/components/chipCheckBoxGroup";
 import { ROOT_PATH } from "@/app/teams/const";
 import { ClientTypeEnum, TeamTypeEnum, TeamsQueries } from "@/app/teams/const";
-import { toQueryString } from "@/app/utils";
 import useQueryHook from "@/hooks/query";
 
 interface DrawerProps {

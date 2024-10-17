@@ -19,7 +19,7 @@ const TeamDetail: React.FC<Props> = async ({ params }) => {
 
   return (
     <>
-      <NavBar params={params} />
+      <NavBar />
       <Content item={item} />
     </>
   );

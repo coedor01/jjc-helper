@@ -1,28 +1,25 @@
 "use client";
 
-import { IconButton, Typography, Box, Grid2 } from "@mui/material";
+import { IconButton, Typography, Grid2, Paper } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useRouter } from "next/navigation";
 
-interface Props {
-  params: { id: string };
-}
-
-const NavBar: React.FC<Props> = ({ params }) => {
+const NavBar: React.FC = () => {
   const router = useRouter();
   const handleBackClick = () => {
     router.back();
   };
 
   return (
-    <Box
+    <Paper
+      elevation={1}
       sx={{
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         padding: 2,
-        backgroundColor: "primary.light", // 可以根据需要修改颜色
-        color: "white",
+        backgroundColor: "white", // 可以根据需要修改颜色
+        color: "black",
         position: "relative",
         height: "50px", // 设置高度
       }}
@@ -37,12 +34,14 @@ const NavBar: React.FC<Props> = ({ params }) => {
       >
         <Grid2 size={2}>
           <IconButton onClick={handleBackClick} sx={{ color: "white" }}>
-            <ArrowBackIcon sx={{ height: 24, width: 24 }} />
+            <ArrowBackIcon
+              sx={{ height: 20, width: 20, color: "text.primary" }}
+            />
           </IconButton>
         </Grid2>
         <Grid2 size={8}>
           <Typography
-            variant="subtitle1"
+            variant="subtitle2"
             sx={{ flexGrow: 1, textAlign: "center" }}
           >
             招募详情
@@ -50,7 +49,7 @@ const NavBar: React.FC<Props> = ({ params }) => {
         </Grid2>
       </Grid2>
       <Grid2 size={4}></Grid2>
-    </Box>
+    </Paper>
   );
 };
 

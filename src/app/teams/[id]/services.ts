@@ -19,7 +19,7 @@ function transformMembers(
   }[]
 ): TeamMember[] {
   const tItems = [];
-  for (let item of items) {
+  for (const item of items) {
     tItems.push({
       avatar: item.role.xf.icon,
       name: item.role.xf.name,

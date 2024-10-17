@@ -112,7 +112,7 @@ const TabsPanel: React.FC<Props> = ({ children, sx }) => {
 
   return (
     <Box sx={sx}>
-      <Paper sx={{ borderBottom: 1, borderColor: "divider" }}>
+      <Paper elevation={2} sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
           value={searchParams.get("date")}
           onChange={handleChange}

@@ -1,4 +1,3 @@
-import { PrismaClient, XinFa, Server, User, TeamType } from "@prisma/client";
 import { faker } from "@faker-js/faker";
 import prisma from "@/client";
 

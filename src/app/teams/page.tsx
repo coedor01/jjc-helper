@@ -19,11 +19,11 @@ import { DEFAULT_QUERIES } from "./const";
 import OperationBar from "./components/OperationBar";
 
 interface Props {
-  searchParams: { teamType: string; clientType: string };
+  searchParams: { date: string; teamType: string; clientType: string };
 }
 
 const Teams: React.FC<Props> = async ({ searchParams }) => {
-  const date = getDateString(new Date());
+  const defaultDate = getDateString(new Date());
 
   console.log(`searchParams=${JSON.stringify(searchParams)}`);
   console.log(
@@ -32,10 +32,12 @@ const Teams: React.FC<Props> = async ({ searchParams }) => {
   console.log(`DEFAULT_QUERIES=${JSON.stringify(DEFAULT_QUERIES)}`);
 
   if (searchParams === undefined || Object.keys(searchParams).length === 0) {
-    redirect(`${ROOT_PATH}?${toQueryString({ date, ...DEFAULT_QUERIES })}`);
+    redirect(
+      `${ROOT_PATH}?${toQueryString({ defaultDate, ...DEFAULT_QUERIES })}`
+    );
   }
 
-  const dateLeft = stringToDate(date, 8);
+  const dateLeft = stringToDate(searchParams.date, 8);
   const dateRight = new Date(dateLeft);
   dateRight.setDate(dateLeft.getDate() + 1);
 
