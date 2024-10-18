@@ -33,7 +33,7 @@ const Teams: React.FC<Props> = async ({ searchParams }) => {
 
   if (searchParams === undefined || Object.keys(searchParams).length === 0) {
     redirect(
-      `${ROOT_PATH}?${toQueryString({ defaultDate, ...DEFAULT_QUERIES })}`
+      `${ROOT_PATH}?${toQueryString({ date: defaultDate, ...DEFAULT_QUERIES })}`
     );
   }
 

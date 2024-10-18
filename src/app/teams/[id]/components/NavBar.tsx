@@ -12,7 +12,6 @@ const NavBar: React.FC = () => {
 
   return (
     <Paper
-      elevation={1}
       sx={{
         display: "flex",
         alignItems: "center",
