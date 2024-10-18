@@ -1,4 +1,4 @@
-import { Box, Grid2, SxProps, Theme, Typography } from "@mui/material";
+import { Box, SxProps, Theme, Typography } from "@mui/material";
 import { TeamOut } from "../schemas";
 import CountdownTimer from "@/app/components/countDownTimer";
 

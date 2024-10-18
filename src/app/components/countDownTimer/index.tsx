@@ -16,25 +16,26 @@ const CountdownTimer: React.FC<Props> = ({ targetTimestamp, sx }) => {
     seconds: 0,
   });
 
-  // 计算倒计时
-  const calculateTimeLeft = () => {
-    const now = Date.now(); // 当前时间的毫秒级时间戳
-    const targetTime = targetTimestamp * 1000; // 将秒级时间戳转为毫秒
-    const difference = targetTime - now;
 
-    if (difference > 0) {
-      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((difference / (1000 * 60)) % 60);
-      const seconds = Math.floor((difference / 1000) % 60);
-
-      setTimeLeft({ days, hours, minutes, seconds });
-    } else {
-      setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-    }
-  };
 
   useEffect(() => {
+    // 计算倒计时
+    const calculateTimeLeft = () => {
+      const now = Date.now(); // 当前时间的毫秒级时间戳
+      const targetTime = targetTimestamp * 1000; // 将秒级时间戳转为毫秒
+      const difference = targetTime - now;
+
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((difference / (1000 * 60)) % 60);
+        const seconds = Math.floor((difference / 1000) % 60);
+
+        setTimeLeft({ days, hours, minutes, seconds });
+      } else {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
     calculateTimeLeft(); // 初始化时计算一次
 
     const timer = setInterval(() => {

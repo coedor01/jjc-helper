@@ -1,7 +1,6 @@
 import prisma from "@/client";
 import { TeamOut, TeamMemberOut, StatItem } from "./schemas";
-import { stringToDate, weekDayFormat } from "@/app/utils";
-import { Team } from "@prisma/client";
+import { weekDayFormat } from "@/app/utils";
 
 interface TeamMember {
   id: number;
@@ -86,7 +85,7 @@ const getXinfaStatsMap = (
 ): Map<number, Map<string, number>> => {
   const xinfaStatsMap = new Map();
 
-  for (let stat of stats) {
+  for (const stat of stats) {
     let userStat = xinfaStatsMap.get(stat.userId);
     if (userStat === undefined) {
       userStat = new Map();
@@ -156,7 +155,7 @@ function transformMembers(
     }
 
     const statsArr: StatItem[] = [];
-    statMap.forEach((value, key, map) => {
+    statMap.forEach((value, key) => {
       statsArr.push({ label: key, value: `${value}次` });
     });
 
@@ -261,7 +260,7 @@ export async function getTeam(id: number): Promise<TeamOut | null> {
     return item;
   }
 
-  const userIds = item.TeamMember.map((item, index) => item.userId);
+  const userIds = item.TeamMember.map((item) => item.userId);
   const teamMemberStatsArr = await prisma.teamMember.findMany({
     select: {
       userId: true,
