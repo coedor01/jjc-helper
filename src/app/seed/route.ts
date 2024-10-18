@@ -142,7 +142,7 @@ const TEAM_TYPE_ARRAYS = [
   },
 ];
 
-const TEAM_COUNT = 210;
+const TEAM_COUNT = 630;
 
 const CLIENT_TYPE_ARRAYS = [
   { id: 1, label: "旗舰" },
@@ -222,6 +222,7 @@ async function createTeams() {
       userId: userId,
       teamTypeId: teamTypeId,
       clientTypeId: getRandomInt(1, 2),
+      status: getRandomInt(0, 2),
     });
   }
 
@@ -241,8 +242,10 @@ async function createTeamMembers() {
       currentScore: getRandomInt(1000, 3000),
       maxScore: getRandomInt(1000, 3000),
       playDuration: 60,
+      userId: userId,
       gameRoleId: userId,
       confirmed: Boolean(getRandomInt(0, 1)),
+      isPigeon: Boolean(getRandomInt(0, 1)),
     });
     id++;
 
@@ -251,19 +254,22 @@ async function createTeamMembers() {
       j < getRandomInt(0, TEAM_TYPE_ARRAYS[teamTypeId - 1].maxMemberCount - 1);
       j++
     ) {
+      const memberUserId = getRandomInt(1, USER_COUNT)
+
       datas.push({
         id: id,
         teamId: i,
         currentScore: getRandomInt(1000, 3000),
         maxScore: getRandomInt(1000, 3000),
         playDuration: 60,
-        gameRoleId: getRandomInt(1, USER_COUNT),
+        userId: memberUserId,
+        gameRoleId: memberUserId,
         confirmed: Boolean(getRandomInt(0, 1)),
+        isPigeon: Boolean(getRandomInt(0, 1)),
       });
       id++;
     }
   }
-  console.log(datas);
 
   await prisma.teamMember.createMany({ data: datas });
 }

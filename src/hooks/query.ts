@@ -50,8 +50,6 @@ function useQueryHook(): QueryHook {
         current = [...prev, value];
       }
       const params = upsertQueryString(name, current.join(","));
-      console.log(`params=${params}`);
-
 
       return params
     },

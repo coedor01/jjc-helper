@@ -1,16 +1,17 @@
 "use server";
 
 import { notFound } from "next/navigation";
-import Content from "./components/Content";
+import TeamContent from "./components/TeamContent";
 import NavBar from "./components/NavBar";
 import { getTeam } from "./services";
+import WarningBar from "./components/WarningBar";
+import Members from "./components/Members";
 
 interface Props {
   params: { id: string };
 }
 
 const TeamDetail: React.FC<Props> = async ({ params }) => {
-  console.log(`JSON.stringify(params)=${JSON.stringify(params)}`);
 
   const item = await getTeam(Number(params.id));
   if (item === null) {
@@ -20,7 +21,9 @@ const TeamDetail: React.FC<Props> = async ({ params }) => {
   return (
     <>
       <NavBar />
-      <Content item={item} />
+      <TeamContent item={item} sx={{ paddingTop: "5px" }} />
+      <WarningBar item={item} sx={{ paddingTop: "5px" }} />
+      <Members item={item} sx={{ marginTop: "5px" }} />
     </>
   );
 };

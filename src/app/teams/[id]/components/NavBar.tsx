@@ -1,6 +1,6 @@
 "use client";
 
-import { IconButton, Typography, Grid2, Paper } from "@mui/material";
+import { IconButton, Typography, Grid2, Box } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useRouter } from "next/navigation";
 
@@ -11,7 +11,7 @@ const NavBar: React.FC = () => {
   };
 
   return (
-    <Paper
+    <Box
       sx={{
         display: "flex",
         alignItems: "center",
@@ -48,7 +48,7 @@ const NavBar: React.FC = () => {
         </Grid2>
       </Grid2>
       <Grid2 size={4}></Grid2>
-    </Paper>
+    </Box>
   );
 };
 

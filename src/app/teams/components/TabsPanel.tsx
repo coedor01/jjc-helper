@@ -9,6 +9,7 @@ import { redirect, usePathname, useRouter } from "next/navigation";
 import useQueryHook from "@/hooks/query";
 import { DEFAULT_QUERIES, TeamsQueries } from "../const";
 import { ROOT_PATH } from "../const";
+import { weekDayFormat } from "@/app/utils";
 
 interface WeekItem {
   label: string;
@@ -23,28 +24,11 @@ interface TabPanelProps {
 }
 
 function getWeekArr(count: number = 7): WeekItem[] {
-  const weekChinese: string[] = [
-    "周日",
-    "周一",
-    "周二",
-    "周三",
-    "周四",
-    "周五",
-    "周六",
-  ];
   const now = new Date();
   const currentDay = now.getDay();
 
   const weekArr: WeekItem[] = [];
   for (let i = 0; i < count; i++) {
-    const targetDay = currentDay + i;
-    let nextWeek = Math.floor(targetDay / 7);
-    const day = targetDay % 7;
-    if (currentDay === 0 && targetDay != currentDay) {
-      nextWeek++;
-    } else if (currentDay !== 0 && day === 0) {
-      nextWeek--;
-    }
 
     const [y, m, d] = [
       now.getFullYear(),
@@ -53,7 +37,7 @@ function getWeekArr(count: number = 7): WeekItem[] {
     ];
 
     weekArr.push({
-      label: "下".repeat(nextWeek) + weekChinese[day],
+      label: weekDayFormat(currentDay, i),
       value: `${y}-${m}-${d}`,
     });
   }

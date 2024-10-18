@@ -25,12 +25,6 @@ interface Props {
 const Teams: React.FC<Props> = async ({ searchParams }) => {
   const defaultDate = getDateString(new Date());
 
-  console.log(`searchParams=${JSON.stringify(searchParams)}`);
-  console.log(
-    `Object.keys(searchParams).length=${Object.keys(searchParams).length}`
-  );
-  console.log(`DEFAULT_QUERIES=${JSON.stringify(DEFAULT_QUERIES)}`);
-
   if (searchParams === undefined || Object.keys(searchParams).length === 0) {
     redirect(
       `${ROOT_PATH}?${toQueryString({ date: defaultDate, ...DEFAULT_QUERIES })}`
@@ -49,6 +43,7 @@ const Teams: React.FC<Props> = async ({ searchParams }) => {
       .split(",")
       .map((value) => Number(value)),
   });
+  
 
   return (
     <>

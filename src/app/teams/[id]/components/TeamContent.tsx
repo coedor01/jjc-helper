@@ -1,22 +1,20 @@
-import { Box, Chip, Grid2, Typography } from "@mui/material";
+import { Box, Chip, Grid2, SxProps, Theme, Typography } from "@mui/material";
 import { TeamOut } from "../schemas";
 
 interface Props {
   item: TeamOut;
+  sx?: SxProps<Theme>;
 }
 
-const Content: React.FC<Props> = ({ item }) => {
+const TeamContent: React.FC<Props> = ({ item, sx }) => {
   const status: number = 0;
 
   return (
-    <Box
-      sx={{
-        paddingTop: "5px",
-      }}
-    >
+    <Box sx={sx}>
       <Box
         sx={{
           backgroundColor: "white",
+          borderRadius: "8px 8px 0 0 ",
         }}
       >
         <Grid2
@@ -94,4 +92,4 @@ const Content: React.FC<Props> = ({ item }) => {
   );
 };
 
-export default Content;
+export default TeamContent;

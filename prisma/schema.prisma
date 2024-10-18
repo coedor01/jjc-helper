@@ -24,15 +24,16 @@ model Guest {
 }
 
 model User {
-  id       Int        @id
-  username String     @unique @db.VarChar(255)
-  password String     @db.VarChar(255)
-  name     String     @db.VarChar(255)
-  qq       String?    @db.VarChar(255)
-  email    String?    @db.VarChar(255)
-  phone    String?    @db.VarChar(255)
-  Team     Team[]
-  GameRole GameRole[]
+  id         Int          @id
+  username   String       @unique @db.VarChar(255)
+  password   String       @db.VarChar(255)
+  name       String       @db.VarChar(255)
+  qq         String?      @db.VarChar(255)
+  email      String?      @db.VarChar(255)
+  phone      String?      @db.VarChar(255)
+  Team       Team[]
+  GameRole   GameRole[]
+  TeamMember TeamMember[]
 }
 
 model XinFa {
@@ -74,6 +75,7 @@ model Team {
   owner                  User         @relation(fields: [userId], references: [id])
   type                   TeamType     @relation(fields: [teamTypeId], references: [id])
   userId                 Int
+  status                 Int          @default(0)
   TeamMember             TeamMember[]
   teamTypeId             Int
   clientTypeId           Int
@@ -93,8 +95,11 @@ model TeamMember {
   maxScore     Int // 最高分
   playDuration Int // 可以玩多久
   confirmed    Boolean  @default(false) // 已确认
+  isPigeon     Boolean  @default(false) // 是否鸽了
+  user         User     @relation(fields: [userId], references: [id])
   role         GameRole @relation(fields: [gameRoleId], references: [id]) // 游戏角色
   team         Team     @relation(fields: [teamId], references: [id])
   teamId       Int
   gameRoleId   Int
+  userId       Int
 }
