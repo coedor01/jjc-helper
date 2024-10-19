@@ -1,48 +1,53 @@
-import { createGuest, fetchGuest } from '@/app/core/v1/services';
-import prisma from '@/client';
-import NextAuth from 'next-auth';
-import { NextAuthOptions } from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-
+import bcrypt from "bcrypt";
+import prisma from "@/client";
+import NextAuth from "next-auth";
+import { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { fetchUserByEmail } from "@/app/core/v1/services";
 
 const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
-      credentials: {
-        signature: { label: "Signature", type: "text" },
-      },
+      id: "email-password-login",
+      name: "邮箱密码",
       async authorize(credentials) {
-        if (!credentials) {
-          throw new Error('没有携带登陆凭证。');
+        if (!credentials?.password || !credentials?.password) {
+          throw new Error("Invalid credentials");
         }
 
-        const signature = credentials?.signature;
-        if (signature === undefined) {
-          throw new Error("没有携带指纹信息，无法完成游客登陆。")
+        const user = await fetchUserByEmail(prisma, credentials?.email);
+        if (!user || !user?.hashedPassword) {
+          throw new Error("Invalid credentials");
         }
 
-        let guest = await fetchGuest(prisma, signature);
-        if (guest === null) {
-          guest = await createGuest(
-            prisma,
-            { signature },
-          );
+        const isCorrectPassword = await bcrypt.compare(
+          credentials.password,
+          user.hashedPassword
+        );
+
+        if (!isCorrectPassword) {
+          throw new Error("Invalid credentials");
         }
 
         return {
-          id: guest.id.toString(),
+          id: user.uid,
         };
+      },
+      credentials: {
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
       },
     }),
   ],
+  debug: process.env.NODE_ENV === "development",
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
+  secret: process.env.NEXTAUTH_SECRET, // 设置环境变量,
   pages: {
-    signIn: '/auth/guestLogin',
+    signIn: "/auth/login", // 自定义登录页面路径
+    error: "/auth/error", // 失败时的重定向页面
   },
-  secret: process.env.NEXTAUTH_SECRET,  // 设置环境变量
 };
 
 const handler = NextAuth(authOptions);

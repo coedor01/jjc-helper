@@ -4,7 +4,11 @@ import { IconButton, Typography, Grid2, Box } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useRouter } from "next/navigation";
 
-const NavBar: React.FC = () => {
+interface Props {
+  title: string;
+}
+
+const NavBar: React.FC<Props> = ({ title }) => {
   const router = useRouter();
   const handleBackClick = () => {
     router.back();
@@ -16,7 +20,6 @@ const NavBar: React.FC = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: 2,
         backgroundColor: "white", // 可以根据需要修改颜色
         color: "black",
         position: "relative",
@@ -43,7 +46,7 @@ const NavBar: React.FC = () => {
             variant="subtitle2"
             sx={{ flexGrow: 1, textAlign: "center" }}
           >
-            招募详情
+            {title}
           </Typography>
         </Grid2>
       </Grid2>

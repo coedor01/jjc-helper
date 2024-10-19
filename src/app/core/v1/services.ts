@@ -1,60 +1,25 @@
-import { PrismaClient } from '@prisma/client';
-import { UserCreate, UserOut, UserUpdate, GuestCreate, GuestOut } from './schemas';
+import { PrismaClient, User } from "@prisma/client";
+import { UserCreate, UserUpdate } from "./schemas";
 
-export async function fetchUserByUsername(
+export async function fetchUserByEmail(
   db: PrismaClient,
-  username: string,
-): Promise<UserOut | null> {
-
+  email: string
+): Promise<User | null> {
   const user = await db.user.findUnique({
     where: {
-      username: username,
-    }
+      email: email,
+    },
   });
 
   return user;
 }
 
-export async function fetchGuest(
-  db: PrismaClient,
-  signature: string,
-): Promise<GuestOut | null> {
-
-  const guest = await db.guest.findUnique({
-    where: {
-      signature: signature,
-    }
-  });
-
-  return guest;
-}
-
-export async function createGuest(
-  db: PrismaClient,
-  item: GuestCreate,
-): Promise<GuestOut> {
-
-  const userBase = await db.userBase.create({});
-
-  const guest = await db.guest.create({
-    data: {
-      id: userBase.id,
-      ...item,
-    },
-  });
-  return guest;
-}
-
 export async function createUser(
   db: PrismaClient,
-  item: UserCreate,
-): Promise<UserOut | null> {
-
-  const userBase = await db.userBase.create({});
-
+  item: UserCreate
+): Promise<User> {
   const user = await db.user.create({
     data: {
-      id: userBase.id,
       ...item,
     },
   });
@@ -64,9 +29,8 @@ export async function createUser(
 export async function updateUser(
   db: PrismaClient,
   id: number,
-  item: UserUpdate,
-): Promise<UserOut | null> {
-
+  item: UserUpdate
+): Promise<User> {
   const user = await db.user.update({
     data: item,
     where: {
@@ -75,18 +39,16 @@ export async function updateUser(
   });
 
   return user;
-
 }
 
 export async function patchUserPassword(
   db: PrismaClient,
   id: number,
-  password: string,
-): Promise<UserOut | null> {
-
+  hashedPassword: string
+): Promise<User> {
   const user = await db.user.update({
     data: {
-      password: password,
+      hashedPassword,
     },
     where: {
       id: id,
@@ -94,5 +56,4 @@ export async function patchUserPassword(
   });
 
   return user;
-
 }

@@ -182,9 +182,9 @@ async function createUsers() {
   for (let i = 1; i < USER_COUNT + 1; i++) {
     datas.push({
       id: i,
-      username: faker.internet.userName(),
-      password: "123456Zz",
-      name: faker.person.fullName(),
+      email: faker.internet.email().toLowerCase(),
+      hashedPassword:
+        "$2b$12$VTBw7txFafQVJ52L1P2i3ujUgPqeFp3nkSpq0kOlTu9ROBDJribWS",
     });
   }
 
@@ -254,7 +254,7 @@ async function createTeamMembers() {
       j < getRandomInt(0, TEAM_TYPE_ARRAYS[teamTypeId - 1].maxMemberCount - 1);
       j++
     ) {
-      const memberUserId = getRandomInt(1, USER_COUNT)
+      const memberUserId = getRandomInt(1, USER_COUNT);
 
       datas.push({
         id: id,

@@ -2,7 +2,7 @@
 
 import { notFound } from "next/navigation";
 import TeamContent from "./components/TeamContent";
-import NavBar from "./components/NavBar";
+import NavBar from "@/app/components/navBar";
 import { getTeam } from "./services";
 import WarningBar from "./components/WarningBar";
 import Members from "./components/Members";
@@ -20,7 +20,7 @@ const TeamDetail: React.FC<Props> = async ({ params }) => {
 
   return (
     <>
-      <NavBar />
+      <NavBar title="招募详情"/>
       <TeamContent item={item} sx={{ paddingTop: "5px" }} />
       <WarningBar item={item} sx={{ paddingTop: "5px" }} />
       <Members item={item} sx={{ marginTop: "5px" }} />

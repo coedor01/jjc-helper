@@ -14,26 +14,16 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
-model UserBase {
-  id Int @id @default(autoincrement())
-}
-
-model Guest {
-  id        Int    @id
-  signature String @unique @db.VarChar(255)
-}
-
 model User {
-  id         Int          @id
-  username   String       @unique @db.VarChar(255)
-  password   String       @db.VarChar(255)
-  name       String       @db.VarChar(255)
-  qq         String?      @db.VarChar(255)
-  email      String?      @db.VarChar(255)
-  phone      String?      @db.VarChar(255)
-  Team       Team[]
-  GameRole   GameRole[]
-  TeamMember TeamMember[]
+  id             Int          @id @default(autoincrement())
+  uid            String       @unique @default(uuid()) @db.Uuid
+  email          String       @unique
+  hashedPassword String       @db.VarChar(255)
+  qq             String?      @db.VarChar(255)
+  phone          String?      @db.VarChar(255)
+  Team           Team[]
+  GameRole       GameRole[]
+  TeamMember     TeamMember[]
 }
 
 model XinFa {
@@ -52,13 +42,13 @@ model Server {
 model GameRole {
   id         Int          @id @default(autoincrement())
   name       String       @db.VarChar(255) // 游戏角色名称
-  user       User         @relation(fields: [userId], references: [id]) // 对应的游客账号
+  user       User         @relation(fields: [userId], references: [id])
   server     Server       @relation(fields: [serverId], references: [id]) // 服务器
   xf         XinFa        @relation(fields: [xinFaId], references: [id]) // 心法
   TeamMember TeamMember[]
-  userId     Int
   xinFaId    Int
   serverId   Int
+  userId     Int
 }
 
 model ClientType {
@@ -74,11 +64,11 @@ model Team {
   clientType             ClientType   @relation(fields: [clientTypeId], references: [id])
   owner                  User         @relation(fields: [userId], references: [id])
   type                   TeamType     @relation(fields: [teamTypeId], references: [id])
-  userId                 Int
   status                 Int          @default(0)
   TeamMember             TeamMember[]
   teamTypeId             Int
   clientTypeId           Int
+  userId                 Int
 }
 
 model TeamType {

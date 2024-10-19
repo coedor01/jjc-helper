@@ -63,3 +63,7 @@ export function weekDayFormat(currentDay: number, dayOffset: number = 0) {
 
   return "下".repeat(nextWeek) + weekChinese[day];
 }
+
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
