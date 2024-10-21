@@ -1,5 +1,6 @@
-import { PrismaClient, User } from "@prisma/client";
+import { GameRole, PrismaClient, Server, User, XinFa } from "@prisma/client";
 import { UserCreate, UserUpdate } from "./schemas";
+import prisma from "@/client";
 
 export async function fetchUserByEmail(
   db: PrismaClient,
@@ -56,4 +57,51 @@ export async function patchUserPassword(
   });
 
   return user;
+}
+
+export async function fetchServers(db: PrismaClient): Promise<Server[]> {
+  const items = await db.server.findMany();
+  return items;
+}
+
+export async function fetchXinFas(db: PrismaClient): Promise<XinFa[]> {
+  const items = await db.xinFa.findMany();
+  return items;
+}
+
+export async function createGameRole(
+  db: PrismaClient,
+  {
+    userId,
+    serverId,
+    xinFaId,
+    name,
+  }: {
+    userId: number;
+    serverId: number;
+    xinFaId: number;
+    name: string;
+  }
+): Promise<number> {
+  const item = await prisma.gameRole.create({
+    data: {
+      name,
+      userId,
+      serverId,
+      xinFaId,
+    },
+  });
+  return item.id;
+}
+
+export function formatRoleName({
+  roleName,
+  serverName,
+  xinFaName,
+}: {
+  roleName: string;
+  serverName: string;
+  xinFaName: string;
+}): string {
+  return `${xinFaName}·${roleName}·${serverName}`;
 }

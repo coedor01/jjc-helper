@@ -1,11 +1,17 @@
+"use client";
+
+import { SessionProvider } from "next-auth/react";
+import { routes } from "@/app/const";
 import SideBar from "@/app/components/sideBar";
-import { routes } from "../const";
+import Profile from "./components/Profile";
 
 export default function Me() {
   return (
-    <SideBar
-      routes={routes}
-      currentRoute="/me"
-    />
-  )
+    <>
+      <SessionProvider>
+        <Profile />
+      </SessionProvider>
+      <SideBar routes={routes} currentRoute="/me" />
+    </>
+  );
 }

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getSession } from "next-auth/react";
 
 function createService(baseURL: string) {
   // axios拦截器
@@ -9,7 +10,15 @@ function createService(baseURL: string) {
 
   // 请求拦截器
   service.interceptors.request.use(
-    (config) => config,
+    async (config) => {
+      const session = await getSession(); // 获取当前 session
+      if (session) {
+        console.log(`session=${JSON.stringify(session)}`);
+
+        // config.headers["Authorization"] = `Bearer ${session.accessToken}`; // 将 token 添加到请求头
+      }
+      return config;
+    },
     (error) => {
       console.log(error); // for debug
       return Promise.reject(error);

@@ -5,14 +5,17 @@ import NavBar from "@/app/components/navBar";
 import { useRouter } from "next/navigation";
 import useDebounce from "@/hooks/debounce";
 import { signIn } from "next-auth/react";
+import { useSnackbar } from "@/app/components/snackbarProvider";
 
 interface Props {
-  searchParams: { callbackUrl: string };
+  searchParams: { callbackUrl?: string };
 }
 
 const Login: React.FC<Props> = ({ searchParams }) => {
   const [loading, setLoading] = React.useState(false);
 
+  const { showSnackbar, showClientErrorSnackBar, showServerErrorSnackBar } =
+    useSnackbar();
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // 阻止表单的默认提交行为
 
@@ -21,24 +24,28 @@ const Login: React.FC<Props> = ({ searchParams }) => {
     // 获取表单数据
     const formData = new FormData(event.currentTarget);
 
-    const res = await signIn("email-password-login", {
-      redirect: false,
-      email: formData.get("email"),
-      password: formData.get("password"),
-    });
+    try {
+      const res = await signIn("email-password-login", {
+        redirect: false,
+        email: formData.get("email"),
+        password: formData.get("password"),
+      });
 
-    console.log(`JSON.stringify(res)=${JSON.stringify(res)}`);
+      console.log(`JSON.stringify(res)=${JSON.stringify(res)}`);
 
-    if (res?.ok) {
-      const callbackUrl = searchParams?.callbackUrl;
-      if (callbackUrl) {
-        router.push(callbackUrl);
+      if (res?.ok) {
+        showSnackbar("登陆成功");
+        const callbackUrl = searchParams?.callbackUrl;
+        if (callbackUrl) {
+          router.push(callbackUrl);
+        } else {
+          router.push("/teams");
+        }
       } else {
-        router.push("/teams");
+        showClientErrorSnackBar("邮箱或密码错误");
       }
-    } else {
-      console.log("登陆失败");
-      console.log(res);
+    } catch (error) {
+      showServerErrorSnackBar();
     }
 
     setLoading(false);
@@ -46,7 +53,12 @@ const Login: React.FC<Props> = ({ searchParams }) => {
 
   const router = useRouter();
   const handleRegister = () => {
-    router.push("/auth/register" + "?" + searchParams.toString());
+    const callbackUrl = searchParams?.callbackUrl;
+    let url = "/auth/register";
+    if (callbackUrl) {
+      url = url + `?callbackUrl=${callbackUrl}`;
+    }
+    router.push(url);
   };
 
   const [emailError, setEmailError] = useState<boolean>(false);
@@ -72,7 +84,7 @@ const Login: React.FC<Props> = ({ searchParams }) => {
 
     if (!passwordPattern.test(value)) {
       setPasswordError(true);
-      setPasswordErrorText("密码需要同时携带数字、字母和符号");
+      setPasswordErrorText("密码需要至少8位，且同时携带数字、字母和符号");
     } else {
       setPasswordError(false);
       setPasswordErrorText("");

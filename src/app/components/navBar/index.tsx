@@ -6,9 +6,10 @@ import { useRouter } from "next/navigation";
 
 interface Props {
   title: string;
+  showBack?: boolean;
 }
 
-const NavBar: React.FC<Props> = ({ title }) => {
+const NavBar: React.FC<Props> = ({ title, showBack = true }) => {
   const router = useRouter();
   const handleBackClick = () => {
     router.back();
@@ -35,7 +36,10 @@ const NavBar: React.FC<Props> = ({ title }) => {
         }}
       >
         <Grid2 size={2}>
-          <IconButton onClick={handleBackClick} sx={{ color: "white" }}>
+          <IconButton
+            onClick={handleBackClick}
+            sx={{ color: "white", display: showBack ? "inline-flex" : "none" }}
+          >
             <ArrowBackIcon
               sx={{ height: 20, width: 20, color: "text.primary" }}
             />

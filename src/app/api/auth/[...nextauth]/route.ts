@@ -31,6 +31,7 @@ const authOptions: NextAuthOptions = {
 
         return {
           id: user.uid,
+          email: user.email,
         };
       },
       credentials: {
@@ -39,6 +40,16 @@ const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  callbacks: {
+    async session({ session, token, user }) {
+      console.log(`user=${JSON.stringify(user)}`);
+
+      session.user = {
+        uid: token.sub,
+      } as any;
+      return session;
+    },
+  },
   debug: process.env.NODE_ENV === "development",
   session: {
     strategy: "jwt",
