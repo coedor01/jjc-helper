@@ -3,15 +3,7 @@
 
 import React, { createContext, useContext, useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
-import MuiAlert, { AlertProps } from "@mui/material/Alert";
-import { Button, makeStyles, SnackbarContent } from "@mui/material";
-
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  props,
-  ref
-) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+import { Button, SnackbarContent } from "@mui/material";
 
 interface SnackbarContextType {
   showSnackbar: (message: string) => void;
@@ -63,7 +55,7 @@ export const SnackbarProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const handleClose = (
-    event?: Event | React.SyntheticEvent<any, Event>,
+    event?: Event | React.SyntheticEvent<Element, Event>,
     reason?: string
   ) => {
     if (reason === "clickaway") {

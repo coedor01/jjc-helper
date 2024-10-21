@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker";
 import prisma from "@/client";
+import { GameRole, Team, User } from "@prisma/client";
 
 function getRandomInt(min: number, max: number) {
   min = Math.ceil(min);
@@ -29,7 +30,7 @@ function getRandomFutureHour() {
   return Math.floor(randomDate.getTime() / 1000);
 }
 
-const USER_COUNT = 100;
+const USER_COUNT = 630;
 
 const SERVER_ARRAYS = [
   { id: 1, name: "蝶恋花" },
@@ -142,8 +143,6 @@ const TEAM_TYPE_ARRAYS = [
   },
 ];
 
-const TEAM_COUNT = 630;
-
 const CLIENT_TYPE_ARRAYS = [
   { id: 1, label: "旗舰" },
   { id: 2, label: "无界" },
@@ -176,45 +175,48 @@ async function createXinFas() {
   return items;
 }
 
-async function createUsers() {
+async function createUsers(): Promise<User[]> {
   const datas = [];
 
   for (let i = 1; i < USER_COUNT + 1; i++) {
     datas.push({
-      id: i,
       email: faker.internet.email().toLowerCase(),
       hashedPassword:
         "$2b$12$VTBw7txFafQVJ52L1P2i3ujUgPqeFp3nkSpq0kOlTu9ROBDJribWS",
     });
   }
 
-  await prisma.user.createMany({
+  const items = await prisma.user.createManyAndReturn({
     data: datas,
   });
+
+  return items;
 }
 
-async function createGameRoles() {
+async function createGameRoles(users: User[]): Promise<GameRole[]> {
   const datas = [];
 
-  for (let i = 1; i < USER_COUNT + 1; i++) {
+  for (let i = 0; i < USER_COUNT; i++) {
+    const userId = users[i].id;
+
     datas.push({
-      id: i,
       name: faker.person.fullName(),
-      userId: i,
+      userId: userId,
       xinFaId: getRandomInt(1, XINFA_ARRAYS.length),
       serverId: getRandomInt(1, SERVER_ARRAYS.length),
     });
   }
 
-  await prisma.gameRole.createMany({ data: datas });
+  const items = await prisma.gameRole.createManyAndReturn({ data: datas });
+  return items;
 }
 
-async function createTeams() {
+async function createTeams(users: User[]): Promise<Team[]> {
   const datas = [];
 
-  for (let i = 1; i < TEAM_COUNT + 1; i++) {
+  for (let i = 0; i < USER_COUNT; i++) {
     const teamTypeId = (i % TEAM_TYPE_ARRAYS.length) + 1;
-    const userId = (i % USER_COUNT) + 1;
+    const userId = users[i].id;
     datas.push({
       id: i,
       startAt: getRandomFutureHour(),
@@ -226,48 +228,56 @@ async function createTeams() {
     });
   }
 
-  await prisma.team.createMany({ data: datas });
+  const items = await prisma.team.createManyAndReturn({ data: datas });
+  return items;
 }
 
-async function createTeamMembers() {
+async function createTeamMembers(
+  users: User[],
+  gameRoles: GameRole[],
+  teams: Team[]
+) {
   const datas = [];
-  let id = 1;
 
-  for (let i = 1; i < TEAM_COUNT + 1; i++) {
+  for (let i = 0; i < USER_COUNT; i++) {
     const teamTypeId = (i % TEAM_TYPE_ARRAYS.length) + 1;
-    const userId = (i % USER_COUNT) + 1;
+    const userId = users[i].id;
+    const teamId = teams[i].id;
+    const gameRoleId = gameRoles[i].id;
+
     datas.push({
-      id: id,
-      teamId: i,
+      teamId: teamId,
       currentScore: getRandomInt(1000, 3000),
       maxScore: getRandomInt(1000, 3000),
       playDuration: 60,
       userId: userId,
-      gameRoleId: userId,
+      gameRoleId: gameRoleId,
       confirmed: Boolean(getRandomInt(0, 1)),
       isPigeon: Boolean(getRandomInt(0, 1)),
     });
-    id++;
 
     for (
       let j = 0;
       j < getRandomInt(0, TEAM_TYPE_ARRAYS[teamTypeId - 1].maxMemberCount - 1);
       j++
     ) {
-      const memberUserId = getRandomInt(1, USER_COUNT);
+      const randUserIndex = getRandomInt(1, USER_COUNT);
+      const memberUserId = users[randUserIndex].id;
+      const memberGameRoleId = gameRoles[randUserIndex].id;
+
+      console.log(`memberUserId=${memberUserId}`);
+      console.log(`memberGameRoleId=${memberGameRoleId}`);
 
       datas.push({
-        id: id,
-        teamId: i,
+        teamId: teamId,
         currentScore: getRandomInt(1000, 3000),
         maxScore: getRandomInt(1000, 3000),
         playDuration: 60,
         userId: memberUserId,
-        gameRoleId: memberUserId,
+        gameRoleId: memberGameRoleId,
         confirmed: Boolean(getRandomInt(0, 1)),
         isPigeon: Boolean(getRandomInt(0, 1)),
       });
-      id++;
     }
   }
 
@@ -308,16 +318,16 @@ export async function GET() {
     await createXinFas();
 
     // 创建用户
-    await createUsers();
+    const users = await createUsers();
 
     // 创建游戏角色
-    await createGameRoles();
+    const gameRoles = await createGameRoles(users);
 
     // 从今天开始连续 7 天，在整点时间创建 210 个队伍
-    await createTeams();
+    const teams = await createTeams(users);
 
     // 创建队伍成员
-    await createTeamMembers();
+    await createTeamMembers(users, gameRoles, teams);
 
     console.log("Transaction successful, all operations completed.");
     return Response.json({ msg: "OK!" }, { status: 200 });

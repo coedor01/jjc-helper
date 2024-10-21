@@ -1,6 +1,6 @@
-import { GameRole, PrismaClient, Server, User, XinFa } from "@prisma/client";
+import { PrismaClient, Server, User, XinFa } from "@prisma/client";
 import { UserCreate, UserUpdate } from "./schemas";
-import prisma from "@/client";
+import { getServerSession } from "next-auth";
 
 export async function fetchUserByEmail(
   db: PrismaClient,
@@ -83,7 +83,7 @@ export async function createGameRole(
     name: string;
   }
 ): Promise<number> {
-  const item = await prisma.gameRole.create({
+  const item = await db.gameRole.create({
     data: {
       name,
       userId,
@@ -92,6 +92,17 @@ export async function createGameRole(
     },
   });
   return item.id;
+}
+
+export async function deleteGameRole(
+  db: PrismaClient,
+  { id }: { id: number }
+): Promise<undefined> {
+  await db.gameRole.delete({
+    where: {
+      id,
+    },
+  });
 }
 
 export function formatRoleName({
@@ -104,4 +115,14 @@ export function formatRoleName({
   xinFaName: string;
 }): string {
   return `${xinFaName}·${roleName}·${serverName}`;
+}
+
+export async function getSessionUser(db: PrismaClient): Promise<User | null> {
+  const session = await getServerSession();
+  const email = session?.user?.email;
+  let user = null;
+  if (email) {
+    user = await fetchUserByEmail(db, email);
+  }
+  return user;
 }

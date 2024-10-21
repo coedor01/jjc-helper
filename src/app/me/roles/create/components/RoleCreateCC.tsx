@@ -15,7 +15,8 @@ import {
 import { useSnackbar } from "@/app/components/snackbarProvider";
 import useDebounce from "@/hooks/debounce";
 import { Server, XinFa } from "@prisma/client";
-import { createRole } from "@/app/axios/localServices";
+import { createGameRole } from "@/app/axios/localServices";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface Props {
   servers: Server[];
@@ -25,6 +26,8 @@ interface Props {
 const RolesCreateCC: React.FC<Props> = ({ servers, xinFas }) => {
   const [loading, setLoading] = React.useState(false);
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { showSnackbar, showClientErrorSnackBar, showServerErrorSnackBar } =
     useSnackbar();
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -34,18 +37,28 @@ const RolesCreateCC: React.FC<Props> = ({ servers, xinFas }) => {
 
     // 获取表单数据
     const formData = new FormData(event.currentTarget);
-    const server = formData.get("server") as string;
-    const xinFa = formData.get("xinFa") as string;
-    const roleName = formData.get("roleName") as string;
-    if (server && xinFa && roleName) {
+    const serverId = Number(formData.get("server")) as number;
+    const xinFaId = Number(formData.get("xinFa")) as number;
+    const name = formData.get("roleName") as string;
+    if (serverId && xinFaId && name) {
       try {
-        const res = await createRole({
-          server,
-          xinFa,
-          roleName,
+        const res = await createGameRole({
+          serverId,
+          xinFaId,
+          name,
         });
-        console.log(`response=${res}`);
-      } catch (error) {
+        if (res.data.ok) {
+          showSnackbar("创建成功");
+          const callbackUrl = searchParams.get("callbackUrl");
+          if (callbackUrl) {
+            router.push(callbackUrl);
+          } else {
+            router.push("/me");
+          }
+        } else {
+          showClientErrorSnackBar(res.data.error);
+        }
+      } catch {
         showServerErrorSnackBar();
       }
     }
@@ -61,7 +74,7 @@ const RolesCreateCC: React.FC<Props> = ({ servers, xinFas }) => {
     setXinFa(event.target.value as string);
   };
 
-  const [roleNameError, setRoleNameError] = useState<boolean>(false);
+  const [roleNameError, setRoleNameError] = useState<boolean>(true);
   const [roleNameErrorText, setRoleNameErrorText] = useState<string>("");
   const handleRoleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -92,6 +105,7 @@ const RolesCreateCC: React.FC<Props> = ({ servers, xinFas }) => {
             }}
           >
             <FormControl
+              required
               fullWidth
               sx={{
                 margin: "5px 0",
@@ -114,6 +128,7 @@ const RolesCreateCC: React.FC<Props> = ({ servers, xinFas }) => {
               </Select>
             </FormControl>
             <FormControl
+              required
               fullWidth
               sx={{
                 margin: "5px 0",
@@ -135,20 +150,26 @@ const RolesCreateCC: React.FC<Props> = ({ servers, xinFas }) => {
                 ))}
               </Select>
             </FormControl>
-            <TextField
+            <FormControl
               required
-              id="roleName"
-              name="roleName"
-              label="角色名"
-              variant="outlined"
-              onChange={useDebounce(handleRoleNameChange, 500)}
-              error={roleNameError}
-              helperText={roleNameErrorText}
               sx={{
                 margin: "5px 0",
                 width: "100%",
               }}
-            />
+              error={roleNameError}
+            >
+              <TextField
+                required
+                id="roleName"
+                name="roleName"
+                label="角色名"
+                variant="outlined"
+                onChange={useDebounce(handleRoleNameChange, 500)}
+                error={roleNameError && roleNameErrorText !== ""}
+                helperText={roleNameErrorText}
+                sx={{ width: "100%" }}
+              />
+            </FormControl>
           </Box>
         </Box>
         <Box
@@ -160,7 +181,7 @@ const RolesCreateCC: React.FC<Props> = ({ servers, xinFas }) => {
         >
           <Button
             type="submit"
-            disabled={loading}
+            disabled={roleNameError || loading}
             variant="contained"
             sx={{ width: "100%", padding: "10px 0", borderRadius: 0 }}
           >

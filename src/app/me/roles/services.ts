@@ -7,6 +7,7 @@ export async function fetchMyRoles(email: string): Promise<Role[]> {
   if (user) {
     const items = await prisma.gameRole.findMany({
       select: {
+        id: true,
         name: true,
         server: {
           select: {
@@ -26,6 +27,7 @@ export async function fetchMyRoles(email: string): Promise<Role[]> {
     });
 
     return items.map((item) => ({
+      id: item.id,
       name: `${item.xf.name}·${item.name}·${item.server.name}`,
       icon: item.xf.icon,
     }));

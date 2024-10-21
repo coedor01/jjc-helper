@@ -46,7 +46,7 @@ const authOptions: NextAuthOptions = {
 
       session.user = {
         uid: token.sub,
-      } as any;
+      } as { name?: string; email?: string; uid?: string; image?: string };
       return session;
     },
   },

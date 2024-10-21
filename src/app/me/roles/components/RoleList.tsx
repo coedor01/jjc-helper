@@ -2,9 +2,11 @@
 
 import { Avatar, Box, Grid2, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { Role } from "../schemas";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { toQueryString } from "@/app/utils";
+import { Role } from "../schemas";
 
 function NewRoleItem() {
   const router = useRouter();
@@ -13,7 +15,14 @@ function NewRoleItem() {
   return (
     <Box
       onClick={() => {
-        router.push(pathname + "/create");
+        router.push(
+          pathname +
+            "/create" +
+            "?" +
+            toQueryString({
+              callbackUrl: pathname,
+            })
+        );
       }}
       sx={{
         backgroundColor: "white", // 白色背景
@@ -56,8 +65,11 @@ function RoleItem({ item }: { item: Role }) {
         <Grid2 size={2}>
           <Avatar alt={item.icon} src={item.icon} />
         </Grid2>
-        <Grid2 size={10}>
+        <Grid2 size={9}>
           <Typography>{item.name}</Typography>
+        </Grid2>
+        <Grid2 size={1}>
+          <DeleteIcon />
         </Grid2>
       </Grid2>
     </Box>

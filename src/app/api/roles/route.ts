@@ -1,61 +1,77 @@
 import {
   createGameRole,
-  fetchUserByEmail,
+  deleteGameRole,
   formatRoleName,
+  getSessionUser,
 } from "@/app/core/v1/services";
-import { getServerSession } from "next-auth";
 import prisma from "@/client";
 import { NextResponse } from "next/server";
 
 interface PostBody {
-  server: string;
-  xinFa: string;
-  roleName: string;
+  serverId: number;
+  xinFaId: number;
+  name: string;
 }
 
-export async function POST(req: Request, res: Response) {
-  const session = await getServerSession();
-  const email = session?.user?.email;
-  if (email) {
+export async function POST(req: Request) {
+  const user = await getSessionUser(prisma);
+  if (user) {
     const body: PostBody = await req.json();
-    const user = await fetchUserByEmail(prisma, email);
-    if (user?.id) {
-      const id = await createGameRole(prisma, {
-        userId: user.id,
-        serverId: Number(body.server) as number,
-        xinFaId: Number(body.xinFa) as number,
-        name: body.roleName as string,
-      });
-      const item = await prisma.gameRole.findFirst({
-        select: {
-          name: true,
-          server: {
-            select: {
-              name: true,
-            },
-          },
-          xf: {
-            select: {
-              name: true,
-              icon: true,
-            },
+    const id = await createGameRole(prisma, {
+      userId: user.id,
+      ...body,
+    });
+    const item = await prisma.gameRole.findFirst({
+      select: {
+        id: true,
+        name: true,
+        server: {
+          select: {
+            name: true,
           },
         },
-        where: {
-          id,
+        xf: {
+          select: {
+            name: true,
+            icon: true,
+          },
         },
-      });
-      if (item) {
-        return Response.json({
+      },
+      where: {
+        id,
+      },
+    });
+    if (item) {
+      return Response.json({
+        ok: true,
+        data: {
+          id: item.id,
           name: formatRoleName({
             roleName: item.name,
             serverName: item.server.name,
             xinFaName: item.xf.name,
           }),
           icon: item.xf.icon,
-        });
-      }
+        },
+      });
     }
+  }
+
+  return NextResponse.json({ error: "用户信息有误" }, { status: 400 });
+}
+
+interface DeleteBody {
+  id: number;
+}
+
+export async function DELETE(req: Request) {
+  const user = await getSessionUser(prisma);
+  if (user) {
+    const body: DeleteBody = await req.json();
+    await deleteGameRole(prisma, body);
+    return Response.json({
+      ok: true,
+    });
   }
   return NextResponse.json({ error: "用户信息有误" }, { status: 400 });
 }

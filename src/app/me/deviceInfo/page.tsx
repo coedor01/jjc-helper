@@ -39,7 +39,14 @@ function DeviceInfoItem({
 
 function DeviecInfoList() {
   const { data: session } = useSession();
-  const user: any = session?.user;
+  const user:
+    | {
+        name?: string | null;
+        email?: string | null;
+        image?: string | null;
+        uid?: string | null;
+      }
+    | undefined = session?.user;
   const [currentTime, setCurrentTime] = useState<string>("");
 
   useEffect(() => {

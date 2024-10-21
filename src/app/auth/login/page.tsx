@@ -44,7 +44,7 @@ const Login: React.FC<Props> = ({ searchParams }) => {
       } else {
         showClientErrorSnackBar("邮箱或密码错误");
       }
-    } catch (error) {
+    } catch {
       showServerErrorSnackBar();
     }
 
@@ -61,7 +61,7 @@ const Login: React.FC<Props> = ({ searchParams }) => {
     router.push(url);
   };
 
-  const [emailError, setEmailError] = useState<boolean>(false);
+  const [emailError, setEmailError] = useState<boolean>(true);
   const [emailErrorText, setEmailErrorText] = useState<string>("");
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -76,7 +76,7 @@ const Login: React.FC<Props> = ({ searchParams }) => {
     }
   };
 
-  const [passwordError, setPasswordError] = useState<boolean>(false);
+  const [passwordError, setPasswordError] = useState<boolean>(true);
   const [passwordErrorText, setPasswordErrorText] = useState<string>("");
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -114,7 +114,7 @@ const Login: React.FC<Props> = ({ searchParams }) => {
               label="Email"
               variant="outlined"
               onChange={useDebounce(handleEmailChange, 500)}
-              error={emailError}
+              error={emailError && emailErrorText !== ""}
               helperText={emailErrorText}
               sx={{
                 margin: "5px 0",
@@ -129,7 +129,7 @@ const Login: React.FC<Props> = ({ searchParams }) => {
               type="password"
               autoComplete="current-password"
               onChange={useDebounce(handlePasswordChange, 500)}
-              error={passwordError}
+              error={passwordError && passwordErrorText !== ""}
               helperText={passwordErrorText}
               sx={{
                 margin: "5px 0",
@@ -147,7 +147,7 @@ const Login: React.FC<Props> = ({ searchParams }) => {
         >
           <Button
             type="submit"
-            disabled={loading}
+            disabled={emailError || passwordError || loading}
             variant="contained"
             sx={{ width: "100%", padding: "10px 0", borderRadius: 0 }}
           >
