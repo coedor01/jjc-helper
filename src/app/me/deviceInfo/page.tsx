@@ -48,6 +48,7 @@ function DeviecInfoList() {
       }
     | undefined = session?.user;
   const [currentTime, setCurrentTime] = useState<string>("");
+  const [version, setVersion] = useState<string | null>(null);
 
   useEffect(() => {
     const updateTime = () => {
@@ -65,12 +66,11 @@ function DeviecInfoList() {
     };
 
     updateTime(); // 初始调用以显示当前时间
+    setVersion(localStorage.getItem("publicVersion"));
     const intervalId = setInterval(updateTime, 1000); // 每秒更新
 
     return () => clearInterval(intervalId); // 清除定时器
   }, []);
-
-  const version = localStorage.getItem("publicVersion");
 
   return (
     <Box

@@ -6,7 +6,7 @@ import {
 import prisma from "@/client";
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request) {
+export async function GET() {
   const user = await getSessionUser(prisma);
   if (user) {
     const items = await prisma.gameRole.findMany({

@@ -1,7 +1,6 @@
 "use client";
 
 import { createTeamMember } from "@/app/axios/localServices";
-import { Data } from "@/app/axios/types";
 import CenteredLoginPrompt from "@/app/components/centeredLoginPrompt";
 import NavBar from "@/app/components/navBar";
 import { useSnackbar } from "@/app/components/snackbarProvider";
@@ -19,7 +18,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { AxiosError } from "axios";
 import { Session } from "next-auth";
 import { getSession } from "next-auth/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -98,7 +96,7 @@ const JoinTeamPage: React.FC<Props> = ({ params }) => {
         } else {
           showClientErrorSnackBar(res.data.error);
         }
-      } catch (error) {
+      } catch {
         showServerErrorSnackBar();
       }
     }

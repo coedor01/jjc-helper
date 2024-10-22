@@ -1,4 +1,4 @@
-interface CreatedTeam {
+export interface CreatedTeam {
   id: number;
   startAt: number;
   confirmAdvancedMinutes: number;
@@ -7,7 +7,7 @@ interface CreatedTeam {
   member: CreatedTeamMember;
 }
 
-interface CreatedTeamMember {
+export interface CreatedTeamMember {
   id: number;
   currentScore: number;
   maxScore: number;

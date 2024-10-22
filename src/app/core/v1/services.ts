@@ -166,7 +166,7 @@ export async function getTeamTypesMap(
 ): Promise<Map<number, TeamType>> {
   const items = await fetchTeamTypes(db);
   const typeTypeMap = new Map();
-  for (let item of items) {
+  for (const item of items) {
     typeTypeMap.set(item.id, item);
   }
   return typeTypeMap;

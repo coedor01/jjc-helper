@@ -1,6 +1,6 @@
 "use client";
 
-import { notFound, usePathname, useRouter } from "next/navigation";
+import { notFound } from "next/navigation";
 import TeamContent from "./components/TeamContent";
 import NavBar from "@/app/components/navBar";
 import WarningBar from "./components/WarningBar";
@@ -32,8 +32,6 @@ const TeamDetailPage: React.FC<Props> = ({ params }) => {
     fetchTeam();
   }, []);
 
-  const router = useRouter();
-  const pathname = usePathname();
   const { showSnackbar, showClientErrorSnackBar, showServerErrorSnackBar } =
     useSnackbar();
   const handleClickConfirm = async (teamId: number) => {

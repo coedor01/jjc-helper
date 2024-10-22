@@ -1,3 +1,5 @@
+"use client";
+
 import CenteredLoginPrompt from "@/app/components/centeredLoginPrompt";
 import NavBar from "@/app/components/navBar";
 import { toQueryString } from "@/app/utils";

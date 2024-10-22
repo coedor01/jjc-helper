@@ -1,6 +1,7 @@
 import { AxiosResponse } from "axios";
 import Services from "../services";
 import { Data } from "../types";
+import { CreatedTeam, CreatedTeamMember } from "./types";
 
 export async function register(data: {
   email: string;
