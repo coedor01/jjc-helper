@@ -1,6 +1,7 @@
 import prisma from "@/client";
-import { TeamOut, TeamMemberOut, StatItem } from "@/app/core/v1/schemas";
+import { TeamMemberOut, StatItem } from "@/app/core/v1/schemas";
 import { weekDayFormat } from "@/app/utils";
+import { NextResponse } from "next/server";
 
 interface TeamMember {
   id: number;
@@ -206,7 +207,11 @@ function countLevel(members: { maxScore: number }[]): string {
   return `${level}段`;
 }
 
-export async function getTeam(id: number): Promise<TeamOut | null> {
+export async function GET(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  const id = Number((await params).id) as number;
   const item = await prisma.team.findFirst({
     select: {
       id: true,
@@ -256,39 +261,34 @@ export async function getTeam(id: number): Promise<TeamOut | null> {
     },
   });
 
-  if (item === null) {
-    return item;
-  }
-
-  const userIds = item.TeamMember.map((item) => item.userId);
-  const teamMemberStatsArr = await prisma.teamMember.findMany({
-    select: {
-      userId: true,
-      isPigeon: true,
-      team: {
-        select: {
-          startAt: true,
+  if (item) {
+    const userIds = item.TeamMember.map((item) => item.userId);
+    const teamMemberStatsArr = await prisma.teamMember.findMany({
+      select: {
+        userId: true,
+        isPigeon: true,
+        team: {
+          select: {
+            startAt: true,
+          },
         },
-      },
-      role: {
-        select: {
-          xf: {
-            select: {
-              name: true,
+        role: {
+          select: {
+            xf: {
+              select: {
+                name: true,
+              },
             },
           },
         },
       },
-    },
-    where: {
-      userId: {
-        in: userIds,
+      where: {
+        userId: {
+          in: userIds,
+        },
       },
-    },
-  });
-
-  return (
-    item && {
+    });
+    const data = {
       id: item.id,
       level: countLevel(item.TeamMember),
       startAt: formatSecondTimestampToTime(item.startAt),
@@ -299,6 +299,12 @@ export async function getTeam(id: number): Promise<TeamOut | null> {
       members: transformMembers(item.TeamMember, teamMemberStatsArr),
       currentMemberCount: item.TeamMember.length,
       maxMemberCount: item.type.maxMemberCount,
-    }
-  );
+    };
+
+    return NextResponse.json({
+      ok: true,
+      data: data,
+    });
+  }
+  return NextResponse.json({ error: "队伍信息有误" }, { status: 400 });
 }

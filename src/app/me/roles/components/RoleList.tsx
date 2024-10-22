@@ -6,7 +6,9 @@ import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { toQueryString } from "@/app/utils";
-import { Role } from "../schemas";
+import { RoleOut } from "@/app/core/v1/schemas";
+import { deleteGameRole } from "@/app/axios/localServices";
+import { useSnackbar } from "@/app/components/snackbarProvider";
 
 function NewRoleItem() {
   const router = useRouter();
@@ -15,7 +17,7 @@ function NewRoleItem() {
   return (
     <Box
       onClick={() => {
-        router.push(
+        router.replace(
           pathname +
             "/create" +
             "?" +
@@ -45,7 +47,25 @@ function NewRoleItem() {
   );
 }
 
-function RoleItem({ item }: { item: Role }) {
+function RoleItem({ item }: { item: RoleOut }) {
+  const router = useRouter();
+  const { showSnackbar, showClientErrorSnackBar, showServerErrorSnackBar } =
+    useSnackbar();
+
+  const handleClickDelete = async (id: number) => {
+    try {
+      const res = await deleteGameRole({ id });
+      if (res.data.ok) {
+        showSnackbar("删除成功");
+        router.refresh();
+      } else {
+        showClientErrorSnackBar(res.data.error);
+      }
+    } catch {
+      showServerErrorSnackBar();
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -68,7 +88,7 @@ function RoleItem({ item }: { item: Role }) {
         <Grid2 size={9}>
           <Typography>{item.name}</Typography>
         </Grid2>
-        <Grid2 size={1}>
+        <Grid2 size={1} onClick={() => handleClickDelete(item.id)}>
           <DeleteIcon />
         </Grid2>
       </Grid2>
@@ -76,7 +96,7 @@ function RoleItem({ item }: { item: Role }) {
   );
 }
 interface Props {
-  items: Role[];
+  items: RoleOut[];
 }
 
 const RoleList: React.FC<Props> = ({ items }) => {

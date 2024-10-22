@@ -1,26 +1,28 @@
-"use server";
+"use client";
 
 import NavBar from "@/app/components/navBar";
-import { fetchMyRoles } from "./services";
-import { getServerSession } from "next-auth";
-import { Role } from "./schemas";
+import { RoleOut } from "@/app/core/v1/schemas";
 import RoleList from "./components/RoleList";
+import { useEffect, useState } from "react";
 
-const Roles: React.FC = async () => {
-  const session = await getServerSession();
-  const email = session?.user?.email;
-  let items: Role[] = [];
-  if (email) {
-    items = await fetchMyRoles(email);
-  }
-  for (const item of items) {
-    console.log(`item=${JSON.stringify(item)}`);
-  }
+const Roles: React.FC = () => {
+  const [roles, setRoles] = useState<RoleOut[]>([]);
+  const fetchRoles = async () => {
+    const res = await fetch("/api/roles");
+    const body = await res.json();
 
+    console.log(`body.data=${JSON.stringify(body.data)}`);
+    if (body.ok) {
+      setRoles(body.data);
+    }
+  };
+  useEffect(() => {
+    fetchRoles();
+  }, []);
   return (
     <>
       <NavBar title="我的角色" />
-      <RoleList items={items} />
+      <RoleList items={roles} />
     </>
   );
 };

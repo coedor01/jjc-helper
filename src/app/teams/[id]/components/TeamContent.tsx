@@ -1,5 +1,8 @@
+"use client";
+
 import { Box, Chip, Grid2, SxProps, Theme, Typography } from "@mui/material";
 import { TeamOut } from "../schemas";
+import { usePathname, useRouter } from "next/navigation";
 
 interface Props {
   item: TeamOut;
@@ -8,6 +11,12 @@ interface Props {
 
 const TeamContent: React.FC<Props> = ({ item, sx }) => {
   const status: number = 0;
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const handleClickJoinChip = () => {
+    router.push(pathname + "/join");
+  };
 
   return (
     <Box sx={sx}>
@@ -70,6 +79,7 @@ const TeamContent: React.FC<Props> = ({ item, sx }) => {
               label="加入"
               variant="filled"
               size="small"
+              onClick={handleClickJoinChip}
             />
             <Chip
               sx={{ display: status === 1 ? "inline-flex" : "none", width: 56 }}

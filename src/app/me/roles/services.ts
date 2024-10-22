@@ -1,8 +1,8 @@
 import { fetchUserByEmail } from "@/app/core/v1/services";
 import prisma from "@/client";
-import { Role } from "./schemas";
+import { RoleOut } from "@/app/core/v1/schemas";
 
-export async function fetchMyRoles(email: string): Promise<Role[]> {
+export async function fetchMyRoles(email: string): Promise<RoleOut[]> {
   const user = await fetchUserByEmail(prisma, email);
   if (user) {
     const items = await prisma.gameRole.findMany({

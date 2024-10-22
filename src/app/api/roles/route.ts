@@ -1,11 +1,44 @@
 import {
   createGameRole,
-  deleteGameRole,
   formatRoleName,
   getSessionUser,
 } from "@/app/core/v1/services";
 import prisma from "@/client";
 import { NextResponse } from "next/server";
+
+export async function GET(req: Request) {
+  const user = await getSessionUser(prisma);
+  if (user) {
+    const items = await prisma.gameRole.findMany({
+      select: {
+        id: true,
+        name: true,
+        server: {
+          select: {
+            name: true,
+          },
+        },
+        xf: {
+          select: {
+            name: true,
+            icon: true,
+          },
+        },
+      },
+      where: {
+        userId: user.id,
+      },
+    });
+
+    const data = items.map((item) => ({
+      id: item.id,
+      name: `${item.xf.name}·${item.name}·${item.server.name}`,
+      icon: item.xf.icon,
+    }));
+    return NextResponse.json({ ok: true, data: data });
+  }
+  return NextResponse.json({ error: "用户信息有误" }, { status: 400 });
+}
 
 interface PostBody {
   serverId: number;
@@ -57,21 +90,5 @@ export async function POST(req: Request) {
     }
   }
 
-  return NextResponse.json({ error: "用户信息有误" }, { status: 400 });
-}
-
-interface DeleteBody {
-  id: number;
-}
-
-export async function DELETE(req: Request) {
-  const user = await getSessionUser(prisma);
-  if (user) {
-    const body: DeleteBody = await req.json();
-    await deleteGameRole(prisma, body);
-    return Response.json({
-      ok: true,
-    });
-  }
   return NextResponse.json({ error: "用户信息有误" }, { status: 400 });
 }

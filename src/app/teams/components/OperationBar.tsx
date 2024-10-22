@@ -100,6 +100,8 @@ const OperationBar: React.FC = () => {
     setDrawOpen(true);
   };
 
+  const router = useRouter();
+
   return (
     <>
       <FilterDrawer open={drawOpen} setOpen={setDrawOpen} />
@@ -119,7 +121,12 @@ const OperationBar: React.FC = () => {
         >
           筛选
         </Fab>
-        <Fab size="small" color="secondary" aria-label="add">
+        <Fab
+          size="small"
+          color="secondary"
+          aria-label="add"
+          onClick={() => router.push("/teams/create")}
+        >
           <AddIcon />
         </Fab>
       </OperationBarPanel>
