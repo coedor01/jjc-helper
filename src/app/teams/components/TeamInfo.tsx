@@ -4,24 +4,10 @@ import { Box, Typography, Grid2, Avatar, SxProps, Theme } from "@mui/material";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { ROOT_PATH } from "../const";
-
-interface Member {
-  avatar: string;
-}
-
-interface Team {
-  id: number;
-  clientType: string;
-  teamType: string;
-  level: string;
-  startAt: string;
-  members: Member[];
-  maxMemberCount: number;
-  currentMemberCount: number;
-}
+import { TeamOut } from "@/app/core/v1/schemas";
 
 interface TeamItemProps {
-  item: Team;
+  item: TeamOut;
 }
 
 const TeamItem: React.FC<TeamItemProps> = ({ item }) => {
@@ -102,7 +88,7 @@ const TeamItem: React.FC<TeamItemProps> = ({ item }) => {
         }}
       >
         <Grid2 size={3}>
-          <Typography variant="subtitle1">{item.startAt}</Typography>
+          <Typography variant="subtitle1">{item.startAtText}</Typography>
         </Grid2>
         <Grid2
           size={6}
@@ -141,6 +127,11 @@ const TeamItem: React.FC<TeamItemProps> = ({ item }) => {
               {`缺${item.maxMemberCount - item.currentMemberCount}位`}
             </Typography>
           )}
+          {item.joined && (
+            <Typography variant="subtitle1" sx={{ color: "warn.primary" }}>
+              已加入
+            </Typography>
+          )}
         </Grid2>
       </Grid2>
     </Box>
@@ -148,7 +139,7 @@ const TeamItem: React.FC<TeamItemProps> = ({ item }) => {
 };
 
 interface Props {
-  items: Team[];
+  items: TeamOut[];
   sx?: SxProps<Theme>;
 }
 

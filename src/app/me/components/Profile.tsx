@@ -46,35 +46,37 @@ const Profile: React.FC = () => {
   return (
     <>
       <NavBar title="我的信息" showBack={false} />
-      <CenteredLoginPrompt
-        onLogin={() =>
-          router.push(
-            "/auth/login" +
-              "?" +
-              toQueryString({
-                callbackUrl: pathname + "?" + searchParams.toString(),
-              })
-          )
-        }
-        hidden={status !== "unauthenticated"}
-      />
-      <Box
-        sx={{
-          display: status !== "authenticated" ? "none" : "flex",
-          marginTop: 1,
-          flexDirection: "column",
-        }}
-      >
-        <ProfileItem
-          title="我的角色"
-          onClick={() => router.push("/me/roles")}
+      {status === "unauthenticated" && (
+        <CenteredLoginPrompt
+          onLogin={() =>
+            router.push(
+              "/auth/login" +
+                "?" +
+                toQueryString({
+                  callbackUrl: pathname + "?" + searchParams.toString(),
+                })
+            )
+          }
         />
-        <ProfileItem
-          title="设备信息"
-          onClick={() => router.push("/me/deviceInfo")}
-        />
-      </Box>
-      <LogoutButton hidden={status !== "authenticated"} />
+      )}
+      {status === "authenticated" && (
+        <Box
+          sx={{
+            marginTop: 1,
+            flexDirection: "column",
+          }}
+        >
+          <ProfileItem
+            title="我的角色"
+            onClick={() => router.push("/me/roles")}
+          />
+          <ProfileItem
+            title="设备信息"
+            onClick={() => router.push("/me/deviceInfo")}
+          />
+        </Box>
+      )}
+      {status === "authenticated" && <LogoutButton />}
     </>
   );
 };

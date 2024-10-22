@@ -1,21 +1,27 @@
 "use client";
 
 import { Box, Chip, Grid2, SxProps, Theme, Typography } from "@mui/material";
-import { TeamOut } from "../schemas";
+import { TeamDetail } from "@/app/core/v1/schemas";
 import { usePathname, useRouter } from "next/navigation";
+import { toQueryString } from "@/app/utils";
 
 interface Props {
-  item: TeamOut;
+  item: TeamDetail;
   sx?: SxProps<Theme>;
 }
 
 const TeamContent: React.FC<Props> = ({ item, sx }) => {
-  const status: number = 0;
-
   const router = useRouter();
   const pathname = usePathname();
   const handleClickJoinChip = () => {
-    router.push(pathname + "/join");
+    router.push(
+      pathname +
+        "/join" +
+        "?" +
+        toQueryString({
+          callbackUrl: pathname,
+        })
+    );
   };
 
   return (
@@ -69,32 +75,58 @@ const TeamContent: React.FC<Props> = ({ item, sx }) => {
             </Typography>
           </Grid2>
           <Grid2 size={3}>
-            <Chip
-              sx={{
-                display: status === 0 ? "inline-flex" : "none",
-                height: 28,
-                width: 56,
-              }}
-              color="primary"
-              label="加入"
-              variant="filled"
-              size="small"
-              onClick={handleClickJoinChip}
-            />
-            <Chip
-              sx={{ display: status === 1 ? "inline-flex" : "none", width: 56 }}
-              color="error"
-              label="待确认"
-              variant="outlined"
-              size="small"
-            />
-            <Chip
-              sx={{ display: status === 2 ? "inline-flex" : "none", width: 56 }}
-              color="primary"
-              label="就绪"
-              variant="outlined"
-              size="small"
-            />
+            {item.status === 0 && !item.inTeam && (
+              <Chip
+                sx={{
+                  height: 28,
+                  width: 56,
+                }}
+                color="primary"
+                label="加入"
+                variant="filled"
+                size="small"
+                onClick={handleClickJoinChip}
+              />
+            )}
+            {item.status === 0 && item.inTeam && (
+              <Chip
+                sx={{
+                  height: 28,
+                  width: 56,
+                }}
+                color="primary"
+                label="已加入"
+                variant="outlined"
+                size="small"
+              />
+            )}
+            {item.status === 1 && !item.inTeam && (
+              <Chip
+                sx={{ width: 56 }}
+                color="error"
+                label="已满员"
+                variant="outlined"
+                size="small"
+              />
+            )}
+            {item.status === 1 && item.inTeam && (
+              <Chip
+                sx={{ width: 56 }}
+                color="error"
+                label="待确认"
+                variant="outlined"
+                size="small"
+              />
+            )}
+            {item.status === 2 && (
+              <Chip
+                sx={{ width: 56 }}
+                color="primary"
+                label="就绪"
+                variant="outlined"
+                size="small"
+              />
+            )}
           </Grid2>
         </Grid2>
       </Box>

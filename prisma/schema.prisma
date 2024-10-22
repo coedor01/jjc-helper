@@ -92,4 +92,6 @@ model TeamMember {
   teamId       Int
   gameRoleId   Int
   userId       Int
+
+  @@unique([userId, teamId])
 }

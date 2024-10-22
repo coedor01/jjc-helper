@@ -161,6 +161,17 @@ export async function fetchTeamTypes(db: PrismaClient): Promise<TeamType[]> {
   return rows;
 }
 
+export async function getTeamTypesMap(
+  db: PrismaClient
+): Promise<Map<number, TeamType>> {
+  const items = await fetchTeamTypes(db);
+  const typeTypeMap = new Map();
+  for (let item of items) {
+    typeTypeMap.set(item.id, item);
+  }
+  return typeTypeMap;
+}
+
 export async function createTeamMember(
   db: PrismaClient,
   data: {
@@ -189,4 +200,39 @@ export async function deleteTeamMember(
       teamId,
     },
   });
+}
+
+export async function confirmTeamMember(
+  db: PrismaClient,
+  userId: number,
+  teamId: number
+): Promise<TeamMember> {
+  const item = await db.teamMember.update({
+    data: {
+      confirmed: true,
+    },
+    where: {
+      userId_teamId: {
+        userId: userId,
+        teamId: teamId,
+      },
+    },
+  });
+  return item;
+}
+
+export async function changeTeamStatus(
+  db: PrismaClient,
+  id: number,
+  status: number
+) {
+  const item = await db.team.update({
+    data: {
+      status,
+    },
+    where: {
+      id,
+    },
+  });
+  return item;
 }

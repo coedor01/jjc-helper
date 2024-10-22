@@ -1,9 +1,9 @@
 import { Box, SxProps, Theme, Typography } from "@mui/material";
-import { TeamOut } from "../schemas";
+import { TeamDetail } from "@/app/core/v1/schemas";
 import CountdownTimer from "@/app/components/countDownTimer";
 
 interface Props {
-  item: TeamOut;
+  item: TeamDetail;
   sx?: SxProps<Theme>;
 }
 
@@ -27,7 +27,7 @@ const WarningBar: React.FC<Props> = ({ item, sx }) => {
           <Typography variant="subtitle2">距离招募结束还有</Typography>
         </Box>
         <CountdownTimer
-          targetTimestamp={item.startAtTs}
+          targetTimestamp={item.startAt}
           sx={{
             backgroundColor: "primary.light",
             color: "white",

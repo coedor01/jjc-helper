@@ -1,5 +1,6 @@
 import prisma from "@/client";
-import { TeamOut } from "./schemas";
+import { TeamOut } from "@/app/core/v1/schemas";
+import { getSessionUser } from "../core/v1/services";
 
 interface TeamsQueries {
   startAtLeft: number;
@@ -33,7 +34,16 @@ export async function getTeams({
   teamTypeIds,
   clientTypeIds,
 }: TeamsQueries): Promise<TeamOut[]> {
+  const user = await getSessionUser(prisma);
+  let userId = null;
+  if (user) {
+    userId = user.id;
+  }
+
   const whereClauses = {
+    status: {
+      equals: 0,
+    },
     teamTypeId: {
       in: teamTypeIds,
     },
@@ -64,6 +74,7 @@ export async function getTeams({
       },
       TeamMember: {
         select: {
+          userId: true,
           maxScore: true,
           role: {
             select: {
@@ -87,10 +98,13 @@ export async function getTeams({
     id: item.id,
     teamType: item.type.label,
     clientType: item.clientType.label,
-    startAt: formatSecondTimestampToTime(item.startAt),
+    startAtText: formatSecondTimestampToTime(item.startAt),
     level: countLevel(item.TeamMember),
     members: item.TeamMember.map((member) => ({ avatar: member.role.xf.icon })),
     currentMemberCount: item.TeamMember.length,
     maxMemberCount: item.type.maxMemberCount,
+    joined:
+      userId !== null &&
+      item.TeamMember.map((item) => item.userId).includes(userId),
   }));
 }

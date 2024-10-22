@@ -1,7 +1,8 @@
 import prisma from "@/client";
-import { TeamMemberOut, StatItem } from "@/app/core/v1/schemas";
+import { TeamMemberDetail, StatItem, TeamDetail } from "@/app/core/v1/schemas";
 import { weekDayFormat } from "@/app/utils";
 import { NextResponse } from "next/server";
+import { getSessionUser } from "@/app/core/v1/services";
 
 interface TeamMember {
   id: number;
@@ -107,9 +108,10 @@ const getXinfaStatsMap = (
 };
 
 function transformMembers(
+  userId: number | null,
   items: TeamMember[],
   stats: TeamMemberStats[]
-): TeamMemberOut[] {
+): TeamMemberDetail[] {
   const getPlayDurationText = (item: TeamMember) => {
     return `${item.playDuration}分钟`;
   };
@@ -133,10 +135,6 @@ function transformMembers(
 
     const statsArr: StatItem[] = [];
     stats.forEach((stat, index) => {
-      console.log(
-        `JSON.stringify(stat)=${JSON.stringify(stat)},index=${index};`
-      );
-
       if (stat.total > 0) {
         statsArr.push({
           label: weekDayFormat(index),
@@ -177,6 +175,7 @@ function transformMembers(
       pigeonTotalText: getPigeonTotalText(item),
       pigeonTimeStatsArr: getPigeonTimeStatsArr(item),
       xinfaStatsArr: getXinfaStatsArr(item),
+      isMe: userId === item.userId,
     });
   }
   return tItems;
@@ -211,12 +210,19 @@ export async function GET(
   req: Request,
   { params }: { params: { id: string } }
 ) {
+  const user = await getSessionUser(prisma);
+  let userId = null;
+  if (user) {
+    userId = user.id;
+  }
+
   const id = Number((await params).id) as number;
   const item = await prisma.team.findFirst({
     select: {
       id: true,
       startAt: true,
       confirmAdvancedMinutes: true,
+      status: true,
       clientType: {
         select: {
           label: true,
@@ -288,17 +294,32 @@ export async function GET(
         },
       },
     });
-    const data = {
+
+    let confirmed = false;
+    let inTeam = false;
+    for (const member of item.TeamMember) {
+      if (member.userId === userId) {
+        inTeam = true;
+        if (member.confirmed) {
+          confirmed = true;
+        }
+      }
+    }
+
+    const data: TeamDetail = {
       id: item.id,
       level: countLevel(item.TeamMember),
-      startAt: formatSecondTimestampToTime(item.startAt),
-      startAtTs: item.startAt,
+      startAt: item.startAt,
+      startAtText: formatSecondTimestampToTime(item.startAt),
       confirmAdvancedMinutes: item.confirmAdvancedMinutes,
       clientType: item.clientType.label,
       teamType: item.type.label,
-      members: transformMembers(item.TeamMember, teamMemberStatsArr),
+      members: transformMembers(userId, item.TeamMember, teamMemberStatsArr),
       currentMemberCount: item.TeamMember.length,
       maxMemberCount: item.type.maxMemberCount,
+      inTeam,
+      status: item.status,
+      confirmed,
     };
 
     return NextResponse.json({
@@ -306,5 +327,8 @@ export async function GET(
       data: data,
     });
   }
-  return NextResponse.json({ error: "队伍信息有误" }, { status: 400 });
+  return NextResponse.json(
+    { ok: false, error: "用户信息有误" },
+    { status: 200 }
+  );
 }

@@ -64,3 +64,10 @@ export async function exitTeam(teamId: number): Promise<AxiosResponse<Data>> {
   );
   return res;
 }
+
+export async function confirmTeam(
+  teamId: number
+): Promise<AxiosResponse<Data>> {
+  const res = await Services.localService.post(`/api/teams/${teamId}/confirm`);
+  return res;
+}

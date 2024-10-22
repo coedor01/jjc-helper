@@ -168,6 +168,7 @@ const TeamCreate: React.FC = () => {
             gameRoleId,
           },
         });
+        console.log(`res.data=${res.data}`);
         if (res.data.ok) {
           showSnackbar("创建成功");
           const callbackUrl = searchParams.get("callbackUrl");
@@ -179,7 +180,8 @@ const TeamCreate: React.FC = () => {
         } else {
           showClientErrorSnackBar(res.data.error);
         }
-      } catch {
+      } catch (error) {
+        console.log(`error=${error}`);
         showServerErrorSnackBar();
       }
     }

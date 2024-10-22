@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Box } from "@mui/material";
 import { signOut } from "next-auth/react"; // 引入退出登录的函数
 
-const LogoutButton = ({ hidden }: { hidden: boolean }) => {
+const LogoutButton = () => {
   const handleLogout = async () => {
     await signOut({ redirect: false }); // 退出登录
   };
@@ -12,7 +12,7 @@ const LogoutButton = ({ hidden }: { hidden: boolean }) => {
       sx={{
         width: "100%",
         marginTop: 1,
-        display: hidden ? "none" : "flex",
+        display: "flex",
       }}
     >
       <Button

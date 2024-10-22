@@ -1,9 +1,12 @@
 "use client";
 
 import { createTeamMember } from "@/app/axios/localServices";
+import { Data } from "@/app/axios/types";
+import CenteredLoginPrompt from "@/app/components/centeredLoginPrompt";
 import NavBar from "@/app/components/navBar";
 import { useSnackbar } from "@/app/components/snackbarProvider";
 import { RoleOut } from "@/app/core/v1/schemas";
+import { toQueryString } from "@/app/utils";
 import useDebounce from "@/hooks/debounce";
 import {
   Box,
@@ -14,8 +17,12 @@ import {
   Select,
   SelectChangeEvent,
   TextField,
+  Typography,
 } from "@mui/material";
-import { useRouter, useSearchParams } from "next/navigation";
+import { AxiosError } from "axios";
+import { Session } from "next-auth";
+import { getSession } from "next-auth/react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 
 interface Props {
@@ -25,6 +32,8 @@ interface Props {
 const JoinTeamPage: React.FC<Props> = ({ params }) => {
   const teamId = Number(params.id) as number;
   const [gameRoles, setGameRoles] = useState<RoleOut[]>([]);
+  const [session, setSession] = useState<Session | null>(null);
+  const [dataFetching, setDataFetching] = useState<boolean>(true);
 
   const fetchGameRoles = async () => {
     const res = await fetch("/api/roles");
@@ -32,10 +41,17 @@ const JoinTeamPage: React.FC<Props> = ({ params }) => {
     if (body.ok) {
       setGameRoles(body.data);
     }
+    setDataFetching(false);
+  };
+
+  const fetchSession = async () => {
+    const session = await getSession();
+    setSession(session);
   };
 
   useEffect(() => {
     fetchGameRoles();
+    fetchSession();
   }, []);
 
   const playDurationList = [
@@ -75,14 +91,14 @@ const JoinTeamPage: React.FC<Props> = ({ params }) => {
           showSnackbar("创建成功");
           const callbackUrl = searchParams.get("callbackUrl");
           if (callbackUrl) {
-            router.push(callbackUrl);
+            router.replace(callbackUrl);
           } else {
-            router.push("/teams");
+            router.replace("/teams");
           }
         } else {
           showClientErrorSnackBar(res.data.error);
         }
-      } catch {
+      } catch (error) {
         showServerErrorSnackBar();
       }
     }
@@ -112,6 +128,7 @@ const JoinTeamPage: React.FC<Props> = ({ params }) => {
       setMaxScoreErrorText("");
     }
   };
+  const debouncedHandleMaxScoreChange = useDebounce(handleMaxScoreChange, 500);
 
   const [currentScoreError, setCurrentScoreError] = useState<boolean>(true);
   const [currentScoreErrorText, setCurrentScoreErrorText] =
@@ -130,128 +147,181 @@ const JoinTeamPage: React.FC<Props> = ({ params }) => {
       setCurrentScoreErrorText("");
     }
   };
+  const debouncedHandleCurrentScoreChange = useDebounce(
+    handleCurrentScoreChange,
+    500
+  );
+
+  const pathname = usePathname();
+  const onClickCreate = () => {
+    router.replace(
+      "/me/roles/create" +
+        "?" +
+        toQueryString({
+          callbackUrl: pathname,
+        })
+    );
+  };
 
   return (
     <>
-      <NavBar title="创建队伍" />
-      <Box component="form" onSubmit={handleSubmit}>
-        <Box
-          sx={{
-            marginTop: "5px",
-            backgroundColor: "white",
-            width: "100%",
-          }}
-        >
+      <NavBar title="加入队伍" />
+      {!dataFetching && session && gameRoles.length > 0 && (
+        <Box component="form" onSubmit={handleSubmit}>
           <Box
             sx={{
-              p: 1,
+              marginTop: "5px",
+              backgroundColor: "white",
+              width: "100%",
             }}
           >
-            <FormControl
-              required
-              fullWidth
+            <Box
               sx={{
-                margin: "5px 0",
+                p: 1,
               }}
             >
-              <InputLabel id="gameRoleLabel">角色</InputLabel>
-              <Select
-                labelId="gameRoleLabel"
-                id="gameRole"
-                name="gameRole"
-                value={gameRole}
-                label="gameRole"
-                onChange={handleGameRoleChange}
-              >
-                {gameRoles.map((item, index) => (
-                  <MenuItem key={index} value={item.id}>
-                    {item.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl
-              required
-              sx={{
-                margin: "5px 0",
-                width: "100%",
-              }}
-              error={currentScoreError}
-            >
-              <TextField
+              <FormControl
                 required
-                id="currentScore"
-                name="currentScore"
-                label="当前分"
-                variant="outlined"
-                onChange={useDebounce(handleCurrentScoreChange, 500)}
-                error={currentScoreError && currentScoreErrorText !== ""}
-                helperText={currentScoreErrorText}
-                sx={{ width: "100%" }}
-              />
-            </FormControl>
-            <FormControl
-              required
-              sx={{
-                margin: "5px 0",
-                width: "100%",
-              }}
-              error={currentScoreError}
-            >
-              <TextField
-                required
-                id="maxScore"
-                name="maxScore"
-                label="最高分"
-                variant="outlined"
-                onChange={useDebounce(handleMaxScoreChange, 500)}
-                error={maxScoreError && maxScoreErrorText !== ""}
-                helperText={maxScoreErrorText}
-                sx={{ width: "100%" }}
-              />
-            </FormControl>
-            <FormControl
-              required
-              fullWidth
-              sx={{
-                margin: "5px 0",
-              }}
-            >
-              <InputLabel id="playDurationLabel">能玩多久</InputLabel>
-              <Select
-                labelId="playDurationLabel"
-                id="playDuration"
-                name="playDuration"
-                value={playDuration}
-                label="playDuration"
-                onChange={handlePlayDurationChange}
+                fullWidth
+                sx={{
+                  margin: "5px 0",
+                }}
               >
-                {playDurationList.map((item, index) => (
-                  <MenuItem key={index} value={item.value}>
-                    {item.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+                <InputLabel id="gameRoleLabel">角色</InputLabel>
+                <Select
+                  labelId="gameRoleLabel"
+                  id="gameRole"
+                  name="gameRole"
+                  value={gameRole}
+                  label="gameRole"
+                  onChange={handleGameRoleChange}
+                >
+                  {gameRoles.map((item, index) => (
+                    <MenuItem key={index} value={item.id}>
+                      {item.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl
+                required
+                sx={{
+                  margin: "5px 0",
+                  width: "100%",
+                }}
+                error={currentScoreError}
+              >
+                <TextField
+                  required
+                  id="currentScore"
+                  name="currentScore"
+                  label="当前分"
+                  variant="outlined"
+                  onChange={debouncedHandleMaxScoreChange}
+                  error={currentScoreError && currentScoreErrorText !== ""}
+                  helperText={currentScoreErrorText}
+                  sx={{ width: "100%" }}
+                />
+              </FormControl>
+              <FormControl
+                required
+                sx={{
+                  margin: "5px 0",
+                  width: "100%",
+                }}
+                error={currentScoreError}
+              >
+                <TextField
+                  required
+                  id="maxScore"
+                  name="maxScore"
+                  label="最高分"
+                  variant="outlined"
+                  onChange={debouncedHandleCurrentScoreChange}
+                  error={maxScoreError && maxScoreErrorText !== ""}
+                  helperText={maxScoreErrorText}
+                  sx={{ width: "100%" }}
+                />
+              </FormControl>
+              <FormControl
+                required
+                fullWidth
+                sx={{
+                  margin: "5px 0",
+                }}
+              >
+                <InputLabel id="playDurationLabel">能玩多久</InputLabel>
+                <Select
+                  labelId="playDurationLabel"
+                  id="playDuration"
+                  name="playDuration"
+                  value={playDuration}
+                  label="playDuration"
+                  onChange={handlePlayDurationChange}
+                >
+                  {playDurationList.map((item, index) => (
+                    <MenuItem key={index} value={item.value}>
+                      {item.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+          </Box>
+          <Box
+            sx={{
+              marginTop: "5px",
+              backgroundColor: "white",
+              width: "100%",
+            }}
+          >
+            <Button
+              type="submit"
+              disabled={loading}
+              variant="contained"
+              sx={{ width: "100%", padding: "10px 0", borderRadius: 0 }}
+            >
+              {loading ? "加入中..." : "加入"}
+            </Button>
           </Box>
         </Box>
+      )}
+      {!dataFetching && session && gameRoles.length === 0 && (
         <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          height="100vh"
           sx={{
-            marginTop: "5px",
-            backgroundColor: "white",
-            width: "100%",
+            padding: 2,
           }}
         >
+          <Typography variant="h6" align="center" sx={{ marginBottom: 2 }}>
+            您当前没有绑定游戏角色
+          </Typography>
           <Button
-            type="submit"
-            disabled={loading}
             variant="contained"
-            sx={{ width: "100%", padding: "10px 0", borderRadius: 0 }}
+            onClick={onClickCreate}
+            sx={{ width: "100%", maxWidth: 200 }}
           >
-            {loading ? "加入中..." : "加入"}
+            去创建
           </Button>
         </Box>
-      </Box>
+      )}
+      {!dataFetching && !session && (
+        <CenteredLoginPrompt
+          onLogin={() =>
+            router.push(
+              "/auth/login" +
+                "?" +
+                toQueryString({
+                  callbackUrl: pathname + "?" + searchParams.toString(),
+                })
+            )
+          }
+        />
+      )}
     </>
   );
 };

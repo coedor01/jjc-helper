@@ -5,8 +5,7 @@ import { Box, Button, Typography } from "@mui/material";
 
 const CenteredLoginPrompt: React.FC<{
   onLogin: () => void;
-  hidden: boolean;
-}> = ({ onLogin, hidden }) => {
+}> = ({ onLogin }) => {
   return (
     <Box
       display="flex"
@@ -16,7 +15,6 @@ const CenteredLoginPrompt: React.FC<{
       height="100vh"
       sx={{
         padding: 2,
-        display: hidden ? "none" : "inline-flex",
       }}
     >
       <Typography variant="h6" align="center" sx={{ marginBottom: 2 }}>

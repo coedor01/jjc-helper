@@ -9,7 +9,10 @@ export async function POST(request: Request) {
     const { email, password } = body;
 
     if (!email || !password) {
-      return new NextResponse("Missing info", { status: 400 });
+      return NextResponse.json(
+        { ok: false, error: "缺少用户名和密码" },
+        { status: 200 }
+      );
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);

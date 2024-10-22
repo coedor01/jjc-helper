@@ -37,7 +37,10 @@ export async function GET(req: Request) {
     }));
     return NextResponse.json({ ok: true, data: data });
   }
-  return NextResponse.json({ error: "用户信息有误" }, { status: 400 });
+  return NextResponse.json(
+    { ok: false, error: "用户信息有误" },
+    { status: 200 }
+  );
 }
 
 interface PostBody {
@@ -90,5 +93,8 @@ export async function POST(req: Request) {
     }
   }
 
-  return NextResponse.json({ error: "用户信息有误" }, { status: 400 });
+  return NextResponse.json(
+    { ok: false, error: "用户信息有误" },
+    { status: 200 }
+  );
 }

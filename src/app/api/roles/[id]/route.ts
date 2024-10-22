@@ -15,5 +15,8 @@ export async function DELETE(
       ok: true,
     });
   }
-  return NextResponse.json({ error: "用户信息有误" }, { status: 400 });
+  return NextResponse.json(
+    { ok: false, error: "用户信息有误" },
+    { status: 200 }
+  );
 }

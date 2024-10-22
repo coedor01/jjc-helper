@@ -240,6 +240,7 @@ async function createTeamMembers(
   const datas = [];
 
   for (let i = 0; i < USER_COUNT; i++) {
+    const memberIndexArr = [i];
     const teamTypeId = (i % TEAM_TYPE_ARRAYS.length) + 1;
     const userId = users[i].id;
     const teamId = teams[i].id;
@@ -261,12 +262,13 @@ async function createTeamMembers(
       j < getRandomInt(0, TEAM_TYPE_ARRAYS[teamTypeId - 1].maxMemberCount - 1);
       j++
     ) {
-      const randUserIndex = getRandomInt(1, USER_COUNT);
+      let randUserIndex = getRandomInt(1, USER_COUNT);
+      if (memberIndexArr.includes(randUserIndex)) {
+        randUserIndex = (randUserIndex + 1) % USER_COUNT;
+      }
+      memberIndexArr.push(randUserIndex);
       const memberUserId = users[randUserIndex].id;
       const memberGameRoleId = gameRoles[randUserIndex].id;
-
-      console.log(`memberUserId=${memberUserId}`);
-      console.log(`memberGameRoleId=${memberGameRoleId}`);
 
       datas.push({
         teamId: teamId,

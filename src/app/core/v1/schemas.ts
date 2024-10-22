@@ -24,7 +24,7 @@ export interface StatItem {
   value: string;
 }
 
-export interface TeamMemberOut {
+export interface TeamMemberDetail {
   id: number;
   userId: number;
   avatar: string;
@@ -36,17 +36,37 @@ export interface TeamMemberOut {
   pigeonTotalText: string | null;
   pigeonTimeStatsArr: StatItem[];
   xinfaStatsArr: StatItem[];
+  isMe: boolean;
+}
+
+export interface TeamDetail {
+  id: number;
+  level: string;
+  startAt: number;
+  startAtText: string;
+  confirmAdvancedMinutes: number;
+  clientType: string;
+  teamType: string;
+  members: TeamMemberDetail[];
+  currentMemberCount: number;
+  maxMemberCount: number;
+  status: number;
+  inTeam: boolean;
+  confirmed: boolean;
+}
+
+interface MemberOut {
+  avatar: string;
 }
 
 export interface TeamOut {
   id: number;
-  level: string;
-  startAt: string;
-  startAtTs: number;
-  confirmAdvancedMinutes: number;
-  clientType: string;
   teamType: string;
-  members: TeamMemberOut[];
+  clientType: string;
+  startAtText: string;
+  level: string;
+  members: MemberOut[];
   currentMemberCount: number;
   maxMemberCount: number;
+  joined: boolean;
 }
