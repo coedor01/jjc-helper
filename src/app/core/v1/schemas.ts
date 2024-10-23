@@ -70,3 +70,15 @@ export interface TeamOut {
   maxMemberCount: number;
   joined: boolean;
 }
+
+export interface MyTeam {
+  id: number;
+  teamType: string;
+  clientType: string;
+  startAtText: string;
+  level: string;
+  members: MemberOut[];
+  currentMemberCount: number;
+  maxMemberCount: number;
+  weekDayText: string;
+}

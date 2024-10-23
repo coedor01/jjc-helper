@@ -8,6 +8,7 @@ import {
 } from "@/app/core/v1/services";
 import prisma from "@/client";
 import { NextResponse } from "next/server";
+import { REPLCommand } from "repl";
 
 interface PostBody {
   currentScore: number;
@@ -68,10 +69,15 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   const user = await getSessionUser(prisma);
-  if (user) {
-    const teamId = Number((await params).id) as number;
-
+  const teamId = Number((await params).id) as number;
+  const team = await fetchTeamById(prisma, teamId);
+  if (user && team) {
     await deleteTeamMember(prisma, user.id, teamId);
+
+    // 若组员在满员的情况下退出，则修改队伍状态
+    if (team.status === 1) {
+      await changeTeamStatus(prisma, teamId, 0);
+    }
     return NextResponse.json({ ok: true });
   }
   return NextResponse.json(
