@@ -6,6 +6,7 @@ import useWeekDays from "@/hooks/useWeekDays";
 import { signIn } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import { FaPenToSquare } from "react-icons/fa6";
 
 interface Props {
   isLogin: boolean;
@@ -59,11 +60,16 @@ export default function TabBar({ isLogin, gameRoles }: Props) {
                       <input
                         type="radio"
                         name="roleId"
-                        className="radio checked:bg-red-500 relative right-5"
+                        className="radio checked:bg-red-500 relative right-2"
                         defaultChecked={role.id === currentGameRole?.id}
                         value={role.id}
                       />
-                      <span className="text-lg">{`${role.server.name}·${role.xf.name}·${role.name}`}</span>
+                      <div className="avatar">
+                        <div className="w-8 rounded-full">
+                          <img src={role.xf.icon} />
+                        </div>
+                      </div>
+                      <span className="text-lg relative left-2">{`${role.name}·${role.server.name}`}</span>
                     </label>
                   </div>
                 ))}
@@ -86,35 +92,29 @@ export default function TabBar({ isLogin, gameRoles }: Props) {
       )}
       <div className="fixed top-0 navbar bg-base-100">
         {!isLogin && (
-          <div className="flex-1" onClick={() => signIn()}>
+          <div className="flex-1 animate-pulse" onClick={() => signIn()}>
             <a className="btn btn-ghost text-xl">请登录选择角色</a>
           </div>
         )}
         {isLogin && !currentGameRole && (
-          <div className="flex-1">
-            <ul className="menu menu-horizontal px-1">
-              <li>
-                <details>
-                  <summary className="w-24">
-                    {activeTab.length > 0 ? activeTab[0].label : "点击绑定角色"}
-                  </summary>
-                  <ul className="bg-base-100 rounded-t-none p-2">
-                    {gameRoles.map((role, index) => (
-                      <li key={index} onClick={() => setCurrentGameRole(role)}>
-                        <a>{role.name}</a>
-                      </li>
-                    ))}
-                  </ul>
-                </details>
-              </li>
-            </ul>
+          <div
+            className="flex-1 animate-pulse"
+            onClick={() => router.push("/me/roles/create")}
+          >
+            <a className="btn btn-ghost text-xl ">点击绑定角色</a>
           </div>
         )}
         {isLogin &&
           currentGameRole !== null &&
           currentGameRole !== undefined && (
             <div className="flex-1" onClick={() => setShowEditGameRole(true)}>
-              <a className="btn btn-ghost text-xl ">{`${currentGameRole.xf.name}·${currentGameRole.name}`}</a>
+              <div className="avatar">
+                <div className="w-8 rounded-full">
+                  <img src={currentGameRole.xf.icon} />
+                </div>
+              </div>
+              <a className="btn btn-ghost text-xl pl-1 pr-1">{`${currentGameRole.name}·${currentGameRole.server.name}`}</a>
+              <FaPenToSquare />
             </div>
           )}
 
