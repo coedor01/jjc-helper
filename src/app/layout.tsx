@@ -24,16 +24,9 @@ export default function RootLayout({
   return (
     <html lang="zh">
       <body className={pingFang.variable} style={{ margin: 0 }}>
-        <Box
-          sx={{
-            backgroundColor: "grey.100", // 背景颜色
-            minHeight: "100vh", // 确保背景颜色充满整个屏幕高度
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
+        <div className="absolute size-full bg-gray-100">
           <ClientLayout>{children}</ClientLayout>
-        </Box>
+        </div>
       </body>
     </html>
   );

@@ -2,32 +2,28 @@
 
 import React from "react";
 import { Box, Button, Typography } from "@mui/material";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-const CenteredLoginPrompt: React.FC<{
-  onLogin: () => void;
-}> = ({ onLogin }) => {
+interface Props {
+  jumpUrl: string;
+}
+
+const CenteredLoginPrompt: React.FC<Props> = ({ jumpUrl }) => {
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      justifyContent="center"
-      alignItems="center"
-      height="100vh"
-      sx={{
-        padding: 2,
-      }}
-    >
-      <Typography variant="h6" align="center" sx={{ marginBottom: 2 }}>
-        请登陆后再查看
-      </Typography>
-      <Button
-        variant="contained"
-        onClick={onLogin}
-        sx={{ width: "100%", maxWidth: 200 }}
-      >
-        登陆
-      </Button>
-    </Box>
+    <div className="h-96 justify-center">
+      <div className="card bg-base-100 w-96 shadow-xl">
+        <div className="card-body">
+          <h2 className="card-title">Card title!</h2>
+          <p>If a dog chews shoes whose shoes does he choose?</p>
+          <div className="card-actions justify-end">
+            <a role="button" className="btn btn-error" href={jumpUrl}>
+              去登陆
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

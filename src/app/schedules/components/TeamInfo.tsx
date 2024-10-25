@@ -3,7 +3,6 @@
 import { Box, Typography, Grid2, Avatar, SxProps, Theme } from "@mui/material";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { ROOT_PATH } from "../const";
 import { MyTeam } from "@/app/core/v1/schemas";
 
 interface TeamItemProps {

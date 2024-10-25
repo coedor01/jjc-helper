@@ -5,7 +5,7 @@ import NavBar from "@/app/components/navBar";
 import { toQueryString } from "@/app/utils";
 import { Box, Grid2, Typography } from "@mui/material";
 import { useSession } from "next-auth/react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import LogoutButton from "./LogoutButton";
 
 function ProfileItem({
@@ -40,24 +40,18 @@ function ProfileItem({
 
 const Profile: React.FC = () => {
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const { data: session, status } = useSession();
-  console.log(session?.user);
-  console.log(status);
+  const { status } = useSession();
   return (
     <>
       <NavBar title="我的信息" showBack={false} />
       {status === "unauthenticated" && (
         <CenteredLoginPrompt
-          onLogin={() =>
-            router.push(
-              "/auth/login" +
-                "?" +
-                toQueryString({
-                  callbackUrl: pathname + "?" + searchParams.toString(),
-                })
-            )
+          jumpUrl={
+            "/auth/login" +
+            "?" +
+            toQueryString({
+              callbackUrl: window.location.pathname,
+            })
           }
         />
       )}

@@ -8,7 +8,7 @@ import {
   User,
   XinFa,
 } from "@prisma/client";
-import { UserCreate, UserUpdate } from "./schemas";
+import { GameRoleOut, UserCreate, UserUpdate } from "./schemas";
 import { getServerSession } from "next-auth";
 
 export async function fetchUserByEmail(
@@ -235,4 +235,29 @@ export async function changeTeamStatus(
     },
   });
   return item;
+}
+
+export async function getGameRoles(
+  db: PrismaClient,
+  userId: number
+): Promise<GameRoleOut[]> {
+  const items = await db.gameRole.findMany({
+    select: {
+      id: true,
+      name: true,
+      server: {
+        select: {
+          name: true,
+        },
+      },
+      xf: {
+        select: {
+          name: true,
+          icon: true,
+        },
+      },
+    },
+    where: { userId },
+  });
+  return items;
 }

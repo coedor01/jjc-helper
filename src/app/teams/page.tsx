@@ -1,5 +1,3 @@
-"use server";
-
 import * as React from "react";
 import { redirect } from "next/navigation";
 
@@ -10,13 +8,21 @@ import {
   toQueryString,
 } from "@/app/utils";
 import { ROOT_PATH } from "@/app/teams/const";
-import { routes } from "@/app/const";
-import SideBar from "@/app/components/sideBar";
-import TeamInfo from "./components/TeamInfo";
-import TabsPanel from "./components/TabsPanel";
 import { getTeams } from "./services";
 import { DEFAULT_QUERIES } from "./const";
 import OperationBar from "./components/OperationBar";
+import BottomNav from "../components/bottomNav";
+import TabBar from "../components/tabBar";
+import { getGameRoles, getSessionUser } from "../core/v1/services";
+import prisma from "@/client";
+import { GameRoleOut } from "../core/v1/schemas";
+
+const TeamsLoading = () => (
+  <>
+    <TabBar isLogin={false} gameRoles={[]} />
+    <BottomNav />
+  </>
+);
 
 interface Props {
   searchParams: { date: string; teamType: string; clientType: string };
@@ -43,16 +49,54 @@ const Teams: React.FC<Props> = async ({ searchParams }) => {
       .split(",")
       .map((value) => Number(value)),
   });
-  
+
+  const user = await getSessionUser(prisma);
+  let gameRoles: GameRoleOut[] = [];
+  if (user) {
+    gameRoles = await getGameRoles(prisma, user.id);
+  }
 
   return (
     <>
-      <TabsPanel searchParams={searchParams}>
-        <TeamInfo items={teams} />
-      </TabsPanel>
-      <OperationBar />
+      <React.Suspense fallback={<TeamsLoading />}>
+        <TabBar isLogin={user !== null} gameRoles={gameRoles} />
 
-      <SideBar routes={routes} currentRoute={ROOT_PATH} />
+        <div className="w-full h-full overflow-y-auto">
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+          <div className="w-full h-12 bg-green-300 border-t-2"></div>
+        </div>
+        <OperationBar />
+        <BottomNav />
+      </React.Suspense>
     </>
   );
 };

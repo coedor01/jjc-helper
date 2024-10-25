@@ -9,39 +9,12 @@ import { redirect, usePathname, useRouter } from "next/navigation";
 import useQueryHook from "@/hooks/query";
 import { DEFAULT_QUERIES, SchedulesQueries } from "../const";
 import { ROOT_PATH } from "../const";
-import { weekDayFormat } from "@/app/utils";
-
-interface WeekItem {
-  label: string;
-  value: string;
-}
 
 interface TabPanelProps {
   children?: React.ReactNode;
   index: string;
   value: string | null;
   sx: SxProps<Theme>;
-}
-
-function getWeekArr(count: number = 7): WeekItem[] {
-  const now = new Date();
-  const currentDay = now.getDay();
-
-  const weekArr: WeekItem[] = [];
-  for (let i = 0; i < count; i++) {
-    const [y, m, d] = [
-      now.getFullYear(),
-      now.getMonth() + 1,
-      now.getDate() + i,
-    ];
-
-    weekArr.push({
-      label: weekDayFormat(currentDay, i),
-      value: `${y}-${m}-${d}`,
-    });
-  }
-
-  return weekArr;
 }
 
 function CustomTabPanel(props: TabPanelProps) {

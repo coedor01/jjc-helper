@@ -82,3 +82,13 @@ export interface MyTeam {
   maxMemberCount: number;
   weekDayText: string;
 }
+
+export interface GameRoleOut {
+  id: number;
+  name: string;
+  server: { name: string };
+  xf: {
+    name: string;
+    icon: string;
+  };
+}

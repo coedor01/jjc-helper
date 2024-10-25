@@ -1,17 +1,26 @@
-"use client";
+import { getServerSession } from "next-auth";
+import NavBar from "@/app/components/navBar";
+import CenteredLoginPrompt from "@/app/components/centeredLoginPrompt";
+import { toQueryString } from "../utils";
+import BottomNav from "../components/bottomNav";
 
-import { SessionProvider } from "next-auth/react";
-import { routes } from "@/app/const";
-import SideBar from "@/app/components/sideBar";
-import Profile from "./components/Profile";
-
-export default function Me() {
+export default async function MePage() {
+  const session = await getServerSession();
   return (
     <>
-      <SessionProvider>
-        <Profile />
-      </SessionProvider>
-      <SideBar routes={routes} currentRoute="/me" />
+      <NavBar title="我的信息" showBack={false} />
+      {session && (
+        <CenteredLoginPrompt
+          jumpUrl={
+            "/auth/login" +
+            "?" +
+            toQueryString({
+              callbackUrl: "/me",
+            })
+          }
+        />
+      )}
+      <BottomNav />
     </>
   );
 }

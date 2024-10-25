@@ -1,11 +1,10 @@
 "use client";
 
-import SideBar from "@/app/components/sideBar";
-import { routes } from "../const";
 import TabsPanel from "./components/TabsPanel";
 import TeamInfo from "./components/TeamInfo";
 import { useEffect, useState } from "react";
 import { toQueryString } from "../utils";
+import BottomNav from "../components/bottomNav";
 
 interface Props {
   searchParams: { status?: string };
@@ -33,7 +32,7 @@ const SchedulePage: React.FC<Props> = ({ searchParams }) => {
       <TabsPanel searchParams={searchParams}>
         <TeamInfo items={teams} />
       </TabsPanel>
-      <SideBar routes={routes} currentRoute="/schedule" />
+      <BottomNav />
     </>
   );
 };

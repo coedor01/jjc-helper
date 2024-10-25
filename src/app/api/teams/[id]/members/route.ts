@@ -8,7 +8,6 @@ import {
 } from "@/app/core/v1/services";
 import prisma from "@/client";
 import { NextResponse } from "next/server";
-import { REPLCommand } from "repl";
 
 interface PostBody {
   currentScore: number;

@@ -18,19 +18,19 @@ interface Props {
 const TeamDetailPage: React.FC<Props> = ({ params }) => {
   const teamId = Number(params.id) as number;
   const [team, setTeam] = useState<TeamDetail | null>(null);
-  const fetchTeam = async () => {
-    const res = await fetch(`/api/teams/${teamId}`);
-    const body = await res.json();
-    if (body.ok) {
-      setTeam(body.data);
-    } else {
-      notFound();
-    }
-  };
 
   useEffect(() => {
+    const fetchTeam = async () => {
+      const res = await fetch(`/api/teams/${teamId}`);
+      const body = await res.json();
+      if (body.ok) {
+        setTeam(body.data);
+      } else {
+        notFound();
+      }
+    };
     fetchTeam();
-  }, []);
+  }, [teamId]);
 
   const { showSnackbar, showClientErrorSnackBar, showServerErrorSnackBar } =
     useSnackbar();
