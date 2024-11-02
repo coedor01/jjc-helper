@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="zh">
       <body className={pingFang.variable} style={{ margin: 0 }}>
-        <div className="absolute size-full bg-gray-100">
+        <div className="fixed size-full bg-sky-900">
           <ClientLayout>{children}</ClientLayout>
         </div>
       </body>

@@ -7,19 +7,19 @@ const useRoutes = () => {
   const routes = useMemo(
     () => [
       {
-        label: "大厅",
-        href: "/teams",
-        active: pathname === "/teams",
+        label: "首页",
+        href: "/home",
+        active: pathname === "/home",
       },
       {
-        label: "计划",
-        href: "/schedules",
-        active: pathname === "/schedules",
+        label: "招募",
+        href: "/recruit",
+        active: pathname === "/recruit",
       },
       {
-        label: "我的",
-        href: "/me",
-        active: pathname === "/me",
+        label: "角色",
+        href: "/roles",
+        active: pathname === "/roles",
       },
     ],
     [pathname]
