@@ -6,47 +6,90 @@ export default function Body() {
       <div className="w-full h-12 bg-sky-600 inline-flex justify-center items-center text-white">
         房间
       </div>
-      <div className="fixed top-20 bottom-0 w-full flex flex-col">
-        <div className="w-full h-fit flex justify-center items-end gap-6 pb-4">
-          <div className="w-12 h-32 bg-sky-50 rounded-md overflow-visible">
-            <div className="avatar ">
-              <div className="mask mask-hexagon  relative right-1 bottom-6 w-14 rounded-full">
+      <div className="fixed top-14 bottom-0 w-full flex flex-col">
+        <div className="w-full h-72 flex flex-col justify-center items-center gap-2 pl-2 pr-2">
+          <div className="relative w-full h-12 bg-sky-50 rounded-l-full overflow-visible flex items-center gap-1">
+            <div className="avatar size-12 w-14">
+              <div className="rounded-full">
                 <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
               </div>
+            </div>
+            <div className="relative size-full flex flex-col">
+              <span className="text-right bg-gradient-to-r from-sky-50 to-sky-600 flex items-center justify-between">
+                <span className="pl-1">我·唯我独尊</span>
+                <span className="pr-1 text-white">14段</span>
+              </span>
+              <span className="text-sm text-right pr-1">
+                胜率60% | 胜场999+
+              </span>
             </div>
           </div>
-          <div className="w-12 h-32 bg-sky-50 rounded-md overflow-visible">
-            <div className="avatar ">
-              <div className="mask mask-hexagon  relative right-1 bottom-6 w-14 rounded-full">
+          <div className="relative w-full h-12 bg-sky-50 rounded-l-full overflow-visible flex items-center gap-1">
+            <div className="avatar size-12 w-14">
+              <div className="rounded-full">
                 <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
               </div>
+            </div>
+            <div className="relative size-full flex flex-col">
+              <span className="text-right bg-gradient-to-r from-sky-50 to-sky-600 flex items-center justify-between">
+                <span className="pl-1">我·唯我独尊</span>
+                <span className="pr-1 text-white">14段</span>
+              </span>
+              <span className="text-sm text-right pr-1">
+                胜率60% | 胜场999+
+              </span>
             </div>
           </div>
-          <div className="w-12 h-32 bg-sky-50 rounded-md overflow-visible  outline-double outline-8 outline-amber-300">
-            <div className="avatar">
-              <div className="mask mask-hexagon  relative right-1 bottom-6 w-14 rounded-full">
+          <div className="relative w-full h-12 bg-sky-50 rounded-l-full overflow-visible flex items-center gap-1">
+            <div className="avatar size-12 w-14">
+              <div className="rounded-full">
                 <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
               </div>
             </div>
-            <div className="relative top-14 left-3  size-6 bg-amber-400 rounded-full text-white inline-flex justify-center items-center text-sm">
-              我
+            <div className="relative size-full flex flex-col">
+              <span className="text-right bg-gradient-to-r from-sky-50 to-sky-600 flex items-center justify-between">
+                <span className="pl-1">我·唯我独尊</span>
+                <span className="pr-1 text-white">14段</span>
+              </span>
+              <span className="text-sm text-right pr-1">
+                胜率60% | 胜场999+
+              </span>
             </div>
           </div>
-          <div className="w-12 h-32 bg-sky-50 rounded-md overflow-visible">
-            <div className="avatar ">
-              <div className="mask mask-hexagon  relative right-1 bottom-6 w-14 rounded-full">
+          <div className="relative w-full h-12 bg-sky-50 rounded-l-full overflow-visible flex items-center gap-1">
+            <div className="avatar size-12 w-14">
+              <div className="rounded-full">
                 <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
               </div>
             </div>
+            <div className="relative size-full flex flex-col">
+              <span className="text-right bg-gradient-to-r from-sky-50 to-sky-600 flex items-center justify-between">
+                <span className="pl-1">我·唯我独尊</span>
+                <span className="pr-1 text-white">14段</span>
+              </span>
+              <span className="text-sm text-right pr-1">
+                胜率60% | 胜场999+
+              </span>
+            </div>
           </div>
-          <div className="w-12 h-32 bg-sky-50 rounded-md overflow-visible">
-            <div className="avatar ">
-              <div className="mask mask-hexagon  relative right-1 bottom-6 w-14 rounded-full">
+          <div className="relative w-full h-12 bg-sky-50 rounded-l-full overflow-visible flex items-center gap-1">
+            <div className="avatar size-12 w-14">
+              <div className="rounded-full">
                 <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
               </div>
+            </div>
+            <div className="relative size-full flex flex-col">
+              <span className="text-right bg-gradient-to-r from-sky-50 to-sky-600 flex items-center justify-between">
+                <span className="pl-1">我·唯我独尊</span>
+                <span className="pr-1 text-white">14段</span>
+              </span>
+              <span className="text-sm text-right pr-1">
+                胜率60% | 胜场999+
+              </span>
             </div>
           </div>
         </div>
+
         <div className="w-full h-20 p-2">
           <div className="size-full bg-white rounded-md inline-flex items-center justify-center text-2xl tracking-wide text-sky-900 font-semibold animate-pulse">
             房间还剩 05:00 消失
