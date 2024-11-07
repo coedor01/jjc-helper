@@ -9,89 +9,13 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
-model User {
-  id             Int          @id @default(autoincrement())
-  uid            String       @unique @default(uuid()) @db.Uuid
-  email          String       @unique
-  hashedPassword String       @db.VarChar(255)
-  qq             String?      @db.VarChar(255)
-  phone          String?      @db.VarChar(255)
-  Team           Team[]
-  GameRole       GameRole[]
-  TeamMember     TeamMember[]
-}
-
-model XinFa {
-  id       Int        @id @default(autoincrement())
-  name     String     @db.VarChar(255)
-  icon     String     @db.VarChar(1023)
-  GameRole GameRole[]
-}
-
-model Server {
-  id       Int        @id @default(autoincrement())
-  name     String     @db.VarChar(255)
-  GameRole GameRole[]
-}
-
-model GameRole {
-  id         Int          @id @default(autoincrement())
-  name       String       @db.VarChar(255) // 游戏角色名称
-  user       User         @relation(fields: [userId], references: [id])
-  server     Server       @relation(fields: [serverId], references: [id]) // 服务器
-  xf         XinFa        @relation(fields: [xinFaId], references: [id]) // 心法
-  TeamMember TeamMember[]
-  xinFaId    Int
-  serverId   Int
-  userId     Int
-}
-
-model ClientType {
-  id    Int    @id @default(autoincrement())
-  label String @db.VarChar(255)
-  Team  Team[]
-}
-
-model Team {
-  id                     Int          @id @default(autoincrement())
-  startAt                Int // 开始时间
-  confirmAdvancedMinutes Int // 提前多少分钟确认
-  clientType             ClientType   @relation(fields: [clientTypeId], references: [id])
-  owner                  User         @relation(fields: [userId], references: [id])
-  type                   TeamType     @relation(fields: [teamTypeId], references: [id])
-  status                 Int          @default(0)
-  TeamMember             TeamMember[]
-  teamTypeId             Int
-  clientTypeId           Int
-  userId                 Int
-}
-
-model TeamType {
-  id             Int    @id @default(autoincrement())
-  label          String @db.VarChar(255)
-  value          String @db.VarChar(255)
-  maxMemberCount Int // 最大成员数量
-  Team           Team[]
-}
-
-model TeamMember {
-  id           Int      @id @default(autoincrement())
-  currentScore Int // 当前分
-  maxScore     Int // 最高分
-  playDuration Int // 可以玩多久
-  confirmed    Boolean  @default(false) // 已确认
-  isPigeon     Boolean  @default(false) // 是否鸽了
-  user         User     @relation(fields: [userId], references: [id])
-  role         GameRole @relation(fields: [gameRoleId], references: [id]) // 游戏角色
-  team         Team     @relation(fields: [teamId], references: [id])
-  teamId       Int
-  gameRoleId   Int
-  userId       Int
-
-  @@unique([userId, teamId])
+model Room {
+  id       Int    @id @default(autoincrement())
+  number   String @unique
+  password String
+  members  String
 }
