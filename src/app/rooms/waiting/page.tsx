@@ -1,9 +1,13 @@
-import Body from "./components/Body";
+"use client";
 
-export default async function RoomWatingPage() {
+import Body from "./components/Body";
+import useStaticDatas from "@/hooks/useStaticDatas";
+
+export default function RoomWatingPage() {
+  const { teamTypes, clientTypes } = useStaticDatas();
   return (
     <>
-      <Body />
+      <Body teamTypes={teamTypes} clientTypes={clientTypes} />
     </>
   );
 }

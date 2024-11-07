@@ -24,23 +24,6 @@ interface GameRole {
   panelList: panelList;
 }
 
-interface Server {
-  id: string;
-  name: string;
-}
-
-interface TeamType {
-  id: number;
-  label: string;
-  value: string;
-  maxMemberCount: number;
-}
-
-interface ClientType {
-  id: number;
-  label: string;
-}
-
 interface Props {
   servers: Server[];
   teamTypes: TeamType[];
@@ -74,11 +57,7 @@ export default function Body({ servers, teamTypes, clientTypes }: Props) {
     event.preventDefault(); // 阻止表单的默认提交行为
     // 获取表单数据
     const formData = new FormData(event.currentTarget);
-    const 招募类型IDOrNull = Number(formData.get("招募类型")) as number;
-    const 客户端IDOrNull = Number(formData.get("客户端")) as number;
     const 房间密码OrNull = formData.get("房间密码") as string;
-    console.log(`招募类型ID=${招募类型IDOrNull}`);
-    console.log(`客户端ID=${客户端IDOrNull}`);
     console.log(`房间密码=${房间密码OrNull}`);
   }
 
@@ -208,34 +187,6 @@ export default function Body({ servers, teamTypes, clientTypes }: Props) {
             className="w-full flex flex-col gap-4"
           >
             <div className="w-full bg-sky-50 rounded-md overflow-y-auto overscroll-contain flex flex-col items-center justify-center pt-4 pb-6">
-              <label className="form-control w-full max-w-xs">
-                <div className="label">
-                  <span className="label-text">招募类型</span>
-                </div>
-                <select
-                  className="select select-bordered w-full max-w-xs"
-                  name="招募类型"
-                >
-                  {teamTypes.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="form-control w-full max-w-xs">
-                <div className="label">
-                  <span className="label-text">客户端</span>
-                </div>
-                <select
-                  className="select select-bordered w-full max-w-xs"
-                  name="客户端"
-                >
-                  {clientTypes.map((item) => (
-                    <option value={item.id}>{item.label}</option>
-                  ))}
-                </select>
-              </label>
               <label className="form-control w-full max-w-xs">
                 <div className="label">
                   <span className="label-text">房间密码</span>

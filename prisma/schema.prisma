@@ -15,6 +15,7 @@ datasource db {
 
 model Room {
   id       Int    @id @default(autoincrement())
+  ownerId  String
   number   String @unique
   password String
   members  String
