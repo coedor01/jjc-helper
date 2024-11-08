@@ -4,7 +4,6 @@ import type { Metadata } from "next";
 import LocalFont from "next/font/local";
 
 import "./globals.css";
-import { Box } from "@mui/material";
 import ClientLayout from "./components/clientLayout";
 const pingFang = LocalFont({
   src: "./fonts/PingFang Regular.ttf",

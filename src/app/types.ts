@@ -1,16 +1,16 @@
-interface Server {
+export interface Server {
   id: string;
   name: string;
 }
 
-interface TeamType {
+export interface TeamType {
   id: number;
   label: string;
   value: string;
   maxMemberCount: number;
 }
 
-interface ClientType {
+export interface ClientType {
   id: number;
   label: string;
 }

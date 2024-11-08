@@ -14,9 +14,17 @@ datasource db {
 }
 
 model Room {
+  id               Int                @id @default(autoincrement())
+  password         String
+  createAt         Int
+  UserRoomRelation UserRoomRelation[]
+}
+
+model UserRoomRelation {
   id       Int    @id @default(autoincrement())
-  ownerId  String
-  number   String @unique
-  password String
-  members  String
+  server   String
+  name     String
+  room     Room   @relation(fields: [roomId], references: [id])
+  createAt Int
+  roomId   Int
 }

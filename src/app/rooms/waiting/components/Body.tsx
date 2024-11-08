@@ -1,5 +1,6 @@
 "use client";
 import { FormEvent } from "react";
+import { TeamType, ClientType } from "@/app/types";
 
 interface Props {
   teamTypes: TeamType[];

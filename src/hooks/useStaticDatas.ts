@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Server, TeamType, ClientType } from "@/app/types";
 
 function useStaticDatas(): {
   servers: Server[];

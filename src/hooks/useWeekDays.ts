@@ -36,7 +36,7 @@ const useWeekDays = () => {
         active: searchParams.get("date") === item.value,
         ...item,
       })),
-    [searchParams]
+    [searchParams, weekArr]
   );
 
   return routes;

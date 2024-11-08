@@ -2,6 +2,8 @@
 
 import clsx from "clsx";
 import { FormEvent, useState } from "react";
+import { Server, TeamType, ClientType } from "@/app/types";
+import { createRoom } from "@/app/axios/localServices";
 
 function getXfIcon(kungfuId: string) {
   return `/image/xf/${kungfuId}.png`;
@@ -58,7 +60,23 @@ export default function Body({ servers, teamTypes, clientTypes }: Props) {
     // 获取表单数据
     const formData = new FormData(event.currentTarget);
     const 房间密码OrNull = formData.get("房间密码") as string;
-    console.log(`房间密码=${房间密码OrNull}`);
+
+    if (!gameRole?.serverName || !gameRole?.roleName || !房间密码OrNull) {
+      console.log("缺少服务器名称或角色名称或房间密码");
+      return;
+    }
+    try {
+      const res = await createRoom({
+        server: gameRole.serverName,
+        name: gameRole.roleName,
+        password: 房间密码OrNull,
+      });
+      if (res.data.ok) {
+        console.log(`请求成功，返回的数据为：${res.data.data}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async function handleJoinRooms(event: FormEvent<HTMLFormElement>) {
