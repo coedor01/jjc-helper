@@ -1,9 +1,37 @@
 "use server";
 
-import { redirect } from "next/navigation";
-import { GameRole } from "../types";
-import { getSTimestamp } from "../utils";
 import prisma from "@/client";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { GameRole, Room } from "../types";
+import { getSTimestamp } from "../utils";
+
+export async function getMyRoom(): Promise<Room | null> {
+  let data = null;
+
+  const cookieStore = await cookies();
+  const serverCookie = cookieStore.get("server");
+  const nameCookie = cookieStore.get("name");
+  if (serverCookie && nameCookie) {
+    const ownerServer = serverCookie.value;
+    const ownerName = nameCookie.value;
+
+    const room = await prisma.room.findFirst({
+      orderBy: { id: "desc" },
+      where: {
+        ownerServer,
+        ownerName,
+      },
+    });
+
+    let data = null;
+    if (room) {
+      data = { id: room.id };
+    }
+  }
+
+  return data;
+}
 
 export async function createRoom(gameRole: GameRole, formData: FormData) {
   const rawFormData = {

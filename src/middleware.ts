@@ -5,12 +5,6 @@ export function middleware(request: NextRequest) {
   console.log(`request.nextUrl.pathname=${request.nextUrl.pathname}`);
 
   if (
-    request.nextUrl.pathname !== "/rooms/me" &&
-    request.cookies.has("server") &&
-    request.cookies.has("name")
-  ) {
-    return NextResponse.redirect(new URL("/rooms/me", request.url));
-  } else if (
     request.nextUrl.pathname !== "/setRole" &&
     !(request.cookies.has("server") && request.cookies.has("name"))
   ) {

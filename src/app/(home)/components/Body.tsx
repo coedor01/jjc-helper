@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import { FormEvent, useState } from "react";
-import { TeamType, ClientType, GameRole } from "@/app/types";
+import { TeamType, ClientType, GameRole, Room } from "@/app/types";
 import { createRoom } from "../actions";
 
 function getXfIcon(kungfuId: string) {
@@ -13,12 +13,20 @@ interface Props {
   teamTypes: TeamType[];
   clientTypes: ClientType[];
   gameRole: GameRole;
+  myRoom: Room | null;
 }
 
-export default function Body({ teamTypes, clientTypes, gameRole }: Props) {
+export default function Body({
+  teamTypes,
+  clientTypes,
+  gameRole,
+  myRoom,
+}: Props) {
   const createRoomWithGameRole = createRoom.bind(null, gameRole);
 
-  const [type, setType] = useState<"CREATE" | "JOIN" | "MATCH">("MATCH");
+  const [type, setType] = useState<"CREATE" | "JOIN" | "MATCH" | "MY_ROOM">(
+    "MATCH"
+  );
 
   async function handleJoinRooms(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); // 阻止表单的默认提交行为
@@ -73,38 +81,68 @@ export default function Body({ teamTypes, clientTypes, gameRole }: Props) {
           >
             加入
           </a>
-          <a
-            role="tab"
-            className={clsx(
-              "tab",
-              type === "CREATE" && "bg-sky-900 text-white"
-            )}
-            onClick={() => setType("CREATE")}
-          >
-            创建
-          </a>
+          {myRoom === null && (
+            <a
+              role="tab"
+              className={clsx(
+                "tab",
+                type === "CREATE" && "bg-sky-900 text-white"
+              )}
+              onClick={() => setType("CREATE")}
+            >
+              创建
+            </a>
+          )}
+          {myRoom !== null && (
+            <a
+              role="tab"
+              className={clsx(
+                "tab",
+                type === "MY_ROOM" && "bg-sky-900 text-white"
+              )}
+              onClick={() => setType("MY_ROOM")}
+            >
+              我的房间
+            </a>
+          )}
         </div>
 
-        {type === "CREATE" && (
-          <form
-            action={createRoomWithGameRole}
-            className="w-full flex flex-col gap-4"
-          >
+        {type === "MATCH" && (
+          <form onSubmit={handleMatch} className="w-full flex flex-col gap-4">
             <div className="w-full bg-sky-50 rounded-md overflow-y-auto overscroll-contain flex flex-col items-center justify-center pt-4 pb-6">
               <label className="form-control w-full max-w-xs">
                 <div className="label">
-                  <span className="label-text">房间密码</span>
+                  <span className="label-text">招募类型</span>
                 </div>
-                <input
-                  type="text"
-                  name="password"
-                  placeholder="请设置房间密码"
-                  className="input input-bordered w-full max-w-xs"
-                />
+                <select
+                  className="select select-bordered w-full max-w-xs"
+                  name="招募类型"
+                >
+                  {teamTypes.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="form-control w-full max-w-xs">
+                <div className="label">
+                  <span className="label-text">客户端</span>
+                </div>
+                <select
+                  className="select select-bordered w-full max-w-xs"
+                  name="客户端"
+                >
+                  {clientTypes.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
               </label>
             </div>
-            <button type="submit" className="btn w-full bg-sky-900 text-white">
-              创建房间
+            <button type="submit" className="btn w-full bg-sky-900 text-white ">
+              开始匹配
             </button>
           </form>
         )}
@@ -142,42 +180,49 @@ export default function Body({ teamTypes, clientTypes, gameRole }: Props) {
             </button>
           </form>
         )}
-        {type === "MATCH" && (
-          <form onSubmit={handleMatch} className="w-full flex flex-col gap-4">
+        {type === "CREATE" && (
+          <form
+            action={createRoomWithGameRole}
+            className="w-full flex flex-col gap-4"
+          >
             <div className="w-full bg-sky-50 rounded-md overflow-y-auto overscroll-contain flex flex-col items-center justify-center pt-4 pb-6">
               <label className="form-control w-full max-w-xs">
                 <div className="label">
-                  <span className="label-text">招募类型</span>
+                  <span className="label-text">房间密码</span>
                 </div>
-                <select
-                  className="select select-bordered w-full max-w-xs"
-                  name="招募类型"
-                >
-                  {teamTypes.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="form-control w-full max-w-xs">
-                <div className="label">
-                  <span className="label-text">客户端</span>
-                </div>
-                <select
-                  className="select select-bordered w-full max-w-xs"
-                  name="客户端"
-                >
-                  {clientTypes.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.label}
-                    </option>
-                  ))}
-                </select>
+                <input
+                  type="text"
+                  name="password"
+                  placeholder="请设置房间密码"
+                  className="input input-bordered w-full max-w-xs"
+                />
               </label>
             </div>
-            <button type="submit" className="btn w-full bg-sky-900 text-white ">
-              开始匹配
+            <button type="submit" className="btn w-full bg-sky-900 text-white">
+              创建房间
+            </button>
+          </form>
+        )}
+        {type === "MY_ROOM" && (
+          <form
+            action={createRoomWithGameRole}
+            className="w-full flex flex-col gap-4"
+          >
+            <div className="w-full bg-sky-50 rounded-md overflow-y-auto overscroll-contain flex flex-col items-center justify-center pt-4 pb-6">
+              <label className="form-control w-full max-w-xs">
+                <div className="label">
+                  <span className="label-text">房间密码</span>
+                </div>
+                <input
+                  type="text"
+                  name="password"
+                  placeholder="请输入房间密码"
+                  className="input input-bordered w-full max-w-xs"
+                />
+              </label>
+            </div>
+            <button type="submit" className="btn w-full bg-sky-900 text-white">
+              进入我的房间
             </button>
           </form>
         )}

@@ -23,11 +23,15 @@ export interface GameRole {
   panelList: panelList;
 }
 
-interface panelList {
+export interface panelList {
   score: number;
   panel: {
     name: string;
     percent: boolean;
     value: number;
   }[];
+}
+
+export interface Room {
+  id: number;
 }
