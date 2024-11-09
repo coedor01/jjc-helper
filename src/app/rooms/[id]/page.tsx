@@ -1,13 +1,17 @@
+import { readLocalJsonFile } from "@/app/utils";
 import Body from "./components/Body";
 
-// interface Props {
-//   params: Promise<{ id: string }>;
-// }
-
-export default async function RoomDetailPage() {
+export default async function RoomWatingPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const teamTypes = readLocalJsonFile("teamTypes.json");
+  const clientTypes = readLocalJsonFile("clientTypes.json");
+  const body = await fetch(`/api/rooms/${params.id}`);
   return (
     <>
-      <Body />
+      <Body teamTypes={teamTypes} clientTypes={clientTypes} />
     </>
   );
 }
