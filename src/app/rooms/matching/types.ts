@@ -4,7 +4,7 @@ interface EnterRoomData {
   roomId: number;
 }
 
-export type StatusType = "NULL" | "ROOM" | "TEAM";
+export type StatusType = "HOME" | "ROOM" | "MATCHING" | "TEAM";
 
 export interface CurrentStatusData {
   status: StatusType;

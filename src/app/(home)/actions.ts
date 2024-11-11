@@ -1,58 +1,28 @@
-"use server";
+"use client";
 
-import prisma from "@/client";
-import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { GameRole, Room } from "../types";
-import { getSTimestamp } from "../utils";
+import { $首页_创建房间, $首页_加入房间 } from "@/socket";
 
-export async function getMyRoom(): Promise<Room | null> {
-  let data = null;
-
-  const cookieStore = await cookies();
-  const serverCookie = cookieStore.get("server");
-  const nameCookie = cookieStore.get("name");
-  if (serverCookie && nameCookie) {
-    const ownerServer = serverCookie.value;
-    const ownerName = nameCookie.value;
-
-    const room = await prisma.room.findFirst({
-      orderBy: { id: "desc" },
-      where: {
-        ownerServer,
-        ownerName,
-      },
-    });
-
-    let data = null;
-    if (room) {
-      data = { id: room.id };
-    }
-  }
-
-  return data;
-}
-
-export async function createRoom(gameRole: GameRole, formData: FormData) {
+export function createRoom(formData: FormData) {
   const rawFormData = {
     password: formData.get("password") as string,
   };
 
-  console.log(`rawFormData=${JSON.stringify(rawFormData)}`);
-
-  if (rawFormData.password) {
-    const now = new Date();
-    const createAt = getSTimestamp(now);
-
-    const room = await prisma.room.create({
-      data: {
-        ownerServer: gameRole.serverName,
-        ownerName: gameRole.roleName,
-        password: rawFormData.password,
-        createAt,
-      },
-    });
-
-    redirect("/rooms/me");
+  if (!rawFormData?.password) {
+    console.log("需要填写房间密码");
+    return;
   }
+  $首页_创建房间(rawFormData);
+}
+
+export function joinRoom(formData: FormData) {
+  const rawFormData = {
+    roomId: Number(formData.get("roomId")) as number,
+    password: formData.get("password") as string,
+  };
+
+  if (!rawFormData?.roomId || !rawFormData?.password) {
+    console.log("需要填写房间号和房间密码");
+    return;
+  }
+  $首页_加入房间(rawFormData);
 }

@@ -3,27 +3,27 @@
 import clsx from "clsx";
 import { FormEvent, useState } from "react";
 import { TeamType, ClientType, GameRole, Room } from "@/app/types";
-import { createRoom } from "../actions";
+import { createRoom, joinRoom } from "../actions";
 
 function getXfIcon(kungfuId: string) {
   return `/image/xf/${kungfuId}.png`;
 }
 
 interface Props {
-  teamTypes: TeamType[];
-  clientTypes: ClientType[];
-  gameRole: GameRole;
-  myRoom: Room | null;
+  data: {
+    teamTypes: TeamType[];
+    clientTypes: ClientType[];
+    gameRole: GameRole;
+    myRoom: Room | null;
+  } | null;
 }
 
-export default function Body({
-  teamTypes,
-  clientTypes,
-  gameRole,
-  myRoom,
-}: Props) {
-  const createRoomWithGameRole = createRoom.bind(null, gameRole);
+export default function Body({ data }: Props) {
+  if (!data) {
+    return <>服务器数据错误</>;
+  }
 
+  const { teamTypes, clientTypes, gameRole, myRoom } = data;
   const [type, setType] = useState<"CREATE" | "JOIN" | "MATCH" | "MY_ROOM">(
     "MATCH"
   );
@@ -147,10 +147,7 @@ export default function Body({
           </form>
         )}
         {type === "JOIN" && (
-          <form
-            onSubmit={handleJoinRooms}
-            className="w-full flex flex-col gap-4"
-          >
+          <form action={joinRoom} className="w-full flex flex-col gap-4">
             <div className="w-full bg-sky-50 rounded-md overflow-y-auto overscroll-contain flex flex-col items-center justify-center pt-4 pb-6">
               <label className="form-control w-full max-w-xs">
                 <div className="label">
@@ -158,7 +155,7 @@ export default function Body({
                 </div>
                 <input
                   type="text"
-                  name="房间号"
+                  name="roomId"
                   placeholder="请输入房间号"
                   className="input input-bordered w-full max-w-xs"
                 />
@@ -169,7 +166,7 @@ export default function Body({
                 </div>
                 <input
                   type="text"
-                  name="房间密码"
+                  name="password"
                   placeholder="请输入房间密码"
                   className="input input-bordered w-full max-w-xs"
                 />
@@ -181,10 +178,7 @@ export default function Body({
           </form>
         )}
         {type === "CREATE" && (
-          <form
-            action={createRoomWithGameRole}
-            className="w-full flex flex-col gap-4"
-          >
+          <form action={createRoom} className="w-full flex flex-col gap-4">
             <div className="w-full bg-sky-50 rounded-md overflow-y-auto overscroll-contain flex flex-col items-center justify-center pt-4 pb-6">
               <label className="form-control w-full max-w-xs">
                 <div className="label">
@@ -200,29 +194,6 @@ export default function Body({
             </div>
             <button type="submit" className="btn w-full bg-sky-900 text-white">
               创建房间
-            </button>
-          </form>
-        )}
-        {type === "MY_ROOM" && (
-          <form
-            action={createRoomWithGameRole}
-            className="w-full flex flex-col gap-4"
-          >
-            <div className="w-full bg-sky-50 rounded-md overflow-y-auto overscroll-contain flex flex-col items-center justify-center pt-4 pb-6">
-              <label className="form-control w-full max-w-xs">
-                <div className="label">
-                  <span className="label-text">房间密码</span>
-                </div>
-                <input
-                  type="text"
-                  name="password"
-                  placeholder="请输入房间密码"
-                  className="input input-bordered w-full max-w-xs"
-                />
-              </label>
-            </div>
-            <button type="submit" className="btn w-full bg-sky-900 text-white">
-              进入我的房间
             </button>
           </form>
         )}
