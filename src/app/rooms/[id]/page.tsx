@@ -1,4 +1,4 @@
-import { readLocalJsonFile } from "@/app/utils";
+import { readLocalJsonFile } from "@/utils/server";
 import Body from "./components/Body";
 
 export default async function RoomWatingPage({

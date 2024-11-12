@@ -1,32 +1,35 @@
 "use client";
-import { FormEvent } from "react";
-import { TeamType, ClientType } from "@/app/types";
+import {
+  招募类型,
+  客户端类型,
+  角色信息,
+  房间状态类型,
+  $房间中_取消匹配,
+} from "@/socket";
+import { getXfIcon } from "@/utils/jx3";
+import { startRoomMatching } from "../actions";
 
 interface Props {
-  data: {
-    id: number;
-    teamTypes: TeamType[];
-    clientTypes: ClientType[];
-    isOwner: boolean;
-  } | null;
+  id: number | null;
+  teamTypes: 招募类型[] | null;
+  clientTypes: 客户端类型[] | null;
+  members: 角色信息[];
+  isOwner: boolean;
+  roomStatus: 房间状态类型;
 }
 
-export default function Body({ data }: Props) {
-  if (!data) {
-    return <>服务器数据错误</>;
+export default function Body({
+  id,
+  teamTypes,
+  clientTypes,
+  members,
+  isOwner,
+  roomStatus,
+}: Props) {
+  if (!id || !teamTypes || !clientTypes) {
+    return <>加载中</>;
   }
 
-  const { id, teamTypes, clientTypes, isOwner } = data;
-
-  async function handleMatch(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); // 阻止表单的默认提交行为
-    // 获取表单数据
-    const formData = new FormData(event.currentTarget);
-    const 招募类型IDOrNull = Number(formData.get("招募类型")) as number;
-    const 客户端IDOrNull = Number(formData.get("客户端")) as number;
-    console.log(`招募类型ID=${招募类型IDOrNull}`);
-    console.log(`客户端ID=${客户端IDOrNull}`);
-  }
   return (
     <div className="fixed top-0 bottom-0 w-full flex justify-center items-center">
       <div className="w-96 flex flex-col justify-center items-center gap-8">
@@ -37,47 +40,29 @@ export default function Body({ data }: Props) {
           </div>
         </div>
         <div className="w-full min-h-32 h-fit flex flex-col justify-center items-center gap-2 pl-2 pr-2">
-          <div className="relative w-full h-12 bg-sky-50 rounded-l-full overflow-visible flex items-center gap-1">
-            <div className="avatar size-12 w-14">
-              <div className="rounded-full ring ring-offset-1 ring-offset-base-100 ring-amber-300">
-                <img src="/image/xf/10028.png" />
+          {members.map((item, index) => (
+            <div className="relative w-72 h-12 bg-sky-50 rounded-l-full overflow-visible flex items-center gap-1">
+              <div className="avatar size-12 w-14">
+                <div className="rounded-full ring ring-offset-1 ring-offset-base-100 ring-amber-300">
+                  <img src={getXfIcon(item.kungfuId)} />
+                </div>
+              </div>
+              <div className="relative size-full flex flex-col">
+                <span className="text-right bg-gradient-to-r from-sky-50 to-sky-700 flex items-center justify-between">
+                  <span className="pl-1 ">{`${item.roleName}·${item.serverName}`}</span>
+                </span>
+                <span className="flex-1 text-sm flex items-center justify-between">
+                  <span className="pl-1">{`装分 ${item.panelList.score}`}</span>
+                </span>
               </div>
             </div>
-            <div className="relative size-full flex flex-col">
-              <span className="text-right bg-gradient-to-r from-sky-50 to-sky-700 flex items-center justify-between">
-                <span className="pl-1 ">花间游不动·唯我独尊</span>
-                <span className="pr-1 flex gap-1">
-                  <span className="text-amber-300 font-semibold">[我]</span>
-                  <span className=" text-white">14段</span>
-                </span>
-              </span>
-              <span className="text-sm text-right pr-1">
-                胜率60% | 胜场999+
-              </span>
-            </div>
-          </div>
-          <div className="relative w-full h-12 bg-sky-50 rounded-l-full overflow-visible flex items-center gap-1">
-            <div className="avatar size-12 w-14">
-              <div className="rounded-full ring ring-offset-1 ring-offset-base-100 ring-lime-300">
-                <img src="/image/xf/10786.png" />
-              </div>
-            </div>
-            <div className="relative size-full flex flex-col">
-              <span className="text-right bg-gradient-to-r from-sky-50 to-sky-700 flex items-center justify-between">
-                <span className="pl-1">滴滴顺风策·唯我独尊</span>
-                <span className="pr-1  flex gap-1">
-                  <span className="text-lime-300 font-semibold">[友]</span>
-                  <span className="text-white">14段</span>
-                </span>
-              </span>
-              <span className="text-sm text-right pr-1">
-                胜率60% | 胜场999+
-              </span>
-            </div>
-          </div>
+          ))}
         </div>
         {isOwner && (
-          <form onSubmit={handleMatch} className="w-full flex flex-col gap-4">
+          <form
+            action={startRoomMatching}
+            className="w-full flex flex-col gap-4"
+          >
             <div className="w-full bg-sky-50 rounded-md overflow-y-auto overscroll-contain flex flex-col items-center justify-center pt-4 pb-6">
               <label className="form-control w-full max-w-xs">
                 <div className="label">
@@ -85,7 +70,8 @@ export default function Body({ data }: Props) {
                 </div>
                 <select
                   className="select select-bordered w-full max-w-xs"
-                  name="招募类型"
+                  name="teamTypeId"
+                  disabled={roomStatus === "匹配中"}
                 >
                   {teamTypes.map((item) => (
                     <option key={item.id} value={item.id}>
@@ -100,7 +86,8 @@ export default function Body({ data }: Props) {
                 </div>
                 <select
                   className="select select-bordered w-full max-w-xs"
-                  name="客户端"
+                  name="clientTypeId"
+                  disabled={roomStatus === "匹配中"}
                 >
                   {clientTypes.map((item) => (
                     <option key={item.id} value={item.id}>
@@ -110,16 +97,30 @@ export default function Body({ data }: Props) {
                 </select>
               </label>
             </div>
-            <button
-              type="submit"
-              className="btn w-full bg-sky-50 text-sky-900  animate-pulse"
-            >
-              开始匹配
-            </button>
+            {roomStatus === "等待中" && (
+              <button
+                type="submit"
+                className="btn w-full bg-sky-50 text-sky-900  animate-pulse"
+              >
+                开始匹配
+              </button>
+            )}
           </form>
         )}
-
-        <div className="flex justify-center items-center"></div>
+        {roomStatus === "等待中" && !isOwner && (
+          <div className="text-white">等待房主开始</div>
+        )}
+        {roomStatus === "匹配中" && (
+          <div className="text-white">正在匹配...</div>
+        )}
+        {roomStatus === "匹配中" && isOwner && (
+          <button
+            className="btn w-full bg-sky-900 text-white "
+            onClick={$房间中_取消匹配}
+          >
+            取消
+          </button>
+        )}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { getSTimestamp } from "@/app/utils";
+import { getSTimestamp } from "@/utils/common";
 import prisma from "@/client";
 import { NextRequest, NextResponse } from "next/server";
 

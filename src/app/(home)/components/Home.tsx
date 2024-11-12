@@ -2,51 +2,28 @@
 
 import clsx from "clsx";
 import { FormEvent, useState } from "react";
-import { TeamType, ClientType, GameRole, Room } from "@/app/types";
-import { createRoom, joinRoom } from "../actions";
-
-function getXfIcon(kungfuId: string) {
-  return `/image/xf/${kungfuId}.png`;
-}
+import { createRoom, joinRoom, startMatching } from "../actions";
+import { getXfIcon } from "@/utils/jx3";
+import { 招募类型, 客户端类型, 角色信息, $首页_取消单人匹配 } from "@/socket";
 
 interface Props {
-  data: {
-    teamTypes: TeamType[];
-    clientTypes: ClientType[];
-    gameRole: GameRole;
-    myRoom: Room | null;
-  } | null;
+  teamTypes: 招募类型[] | null;
+  clientTypes: 客户端类型[] | null;
+  gameRole: 角色信息 | null;
+  isMatching: boolean;
 }
 
-export default function Body({ data }: Props) {
-  if (!data) {
-    return <>服务器数据错误</>;
+export default function Body({
+  teamTypes,
+  clientTypes,
+  gameRole,
+  isMatching,
+}: Props) {
+  if (!teamTypes || !clientTypes || !gameRole) {
+    return <>加载中</>;
   }
 
-  const { teamTypes, clientTypes, gameRole, myRoom } = data;
-  const [type, setType] = useState<"CREATE" | "JOIN" | "MATCH" | "MY_ROOM">(
-    "MATCH"
-  );
-
-  async function handleJoinRooms(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); // 阻止表单的默认提交行为
-    // 获取表单数据
-    const formData = new FormData(event.currentTarget);
-    const 房间号OrNull = formData.get("房间号") as string;
-    const 房间密码OrNull = formData.get("房间密码") as string;
-    console.log(`房间号=${房间号OrNull}`);
-    console.log(`房间密码=${房间密码OrNull}`);
-  }
-
-  async function handleMatch(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); // 阻止表单的默认提交行为
-    // 获取表单数据
-    const formData = new FormData(event.currentTarget);
-    const 招募类型IDOrNull = Number(formData.get("招募类型")) as number;
-    const 客户端IDOrNull = Number(formData.get("客户端")) as number;
-    console.log(`招募类型ID=${招募类型IDOrNull}`);
-    console.log(`客户端ID=${客户端IDOrNull}`);
-  }
+  const [type, setType] = useState<"CREATE" | "JOIN" | "MATCH">("MATCH");
 
   return (
     <div className="fixed top-10 bottom-20 left-5 right-5 flex flex-col items-center justify-start">
@@ -81,7 +58,7 @@ export default function Body({ data }: Props) {
           >
             加入
           </a>
-          {myRoom === null && (
+          {
             <a
               role="tab"
               className={clsx(
@@ -92,31 +69,20 @@ export default function Body({ data }: Props) {
             >
               创建
             </a>
-          )}
-          {myRoom !== null && (
-            <a
-              role="tab"
-              className={clsx(
-                "tab",
-                type === "MY_ROOM" && "bg-sky-900 text-white"
-              )}
-              onClick={() => setType("MY_ROOM")}
-            >
-              我的房间
-            </a>
-          )}
+          }
         </div>
 
         {type === "MATCH" && (
-          <form onSubmit={handleMatch} className="w-full flex flex-col gap-4">
+          <form action={startMatching} className="w-full flex flex-col gap-4">
             <div className="w-full bg-sky-50 rounded-md overflow-y-auto overscroll-contain flex flex-col items-center justify-center pt-4 pb-6">
               <label className="form-control w-full max-w-xs">
                 <div className="label">
                   <span className="label-text">招募类型</span>
                 </div>
                 <select
+                  disabled={isMatching}
                   className="select select-bordered w-full max-w-xs"
-                  name="招募类型"
+                  name="teamTypeId"
                 >
                   {teamTypes.map((item) => (
                     <option key={item.id} value={item.id}>
@@ -130,8 +96,9 @@ export default function Body({ data }: Props) {
                   <span className="label-text">客户端</span>
                 </div>
                 <select
+                  disabled={isMatching}
                   className="select select-bordered w-full max-w-xs"
-                  name="客户端"
+                  name="clientTypeId"
                 >
                   {clientTypes.map((item) => (
                     <option key={item.id} value={item.id}>
@@ -141,9 +108,14 @@ export default function Body({ data }: Props) {
                 </select>
               </label>
             </div>
-            <button type="submit" className="btn w-full bg-sky-900 text-white ">
-              开始匹配
-            </button>
+            {!isMatching && (
+              <button
+                type="submit"
+                className="btn w-full bg-sky-900 text-white "
+              >
+                开始匹配
+              </button>
+            )}
           </form>
         )}
         {type === "JOIN" && (
@@ -154,6 +126,7 @@ export default function Body({ data }: Props) {
                   <span className="label-text">房间号</span>
                 </div>
                 <input
+                  disabled={isMatching}
                   type="text"
                   name="roomId"
                   placeholder="请输入房间号"
@@ -165,6 +138,7 @@ export default function Body({ data }: Props) {
                   <span className="label-text">房间密码</span>
                 </div>
                 <input
+                  disabled={isMatching}
                   type="text"
                   name="password"
                   placeholder="请输入房间密码"
@@ -172,9 +146,14 @@ export default function Body({ data }: Props) {
                 />
               </label>
             </div>
-            <button type="submit" className="btn w-full bg-sky-900 text-white ">
-              加入房间
-            </button>
+            {!isMatching && (
+              <button
+                type="submit"
+                className="btn w-full bg-sky-900 text-white "
+              >
+                加入房间
+              </button>
+            )}
           </form>
         )}
         {type === "CREATE" && (
@@ -185,6 +164,7 @@ export default function Body({ data }: Props) {
                   <span className="label-text">房间密码</span>
                 </div>
                 <input
+                  disabled={isMatching}
                   type="text"
                   name="password"
                   placeholder="请设置房间密码"
@@ -192,10 +172,25 @@ export default function Body({ data }: Props) {
                 />
               </label>
             </div>
-            <button type="submit" className="btn w-full bg-sky-900 text-white">
-              创建房间
-            </button>
+            {!isMatching && (
+              <button
+                disabled={isMatching}
+                type="submit"
+                className="btn w-full bg-sky-900 text-white"
+              >
+                创建房间
+              </button>
+            )}
           </form>
+        )}
+        {isMatching && <div className="text-white">正在匹配...</div>}
+        {isMatching && (
+          <button
+            className="btn w-full bg-sky-900 text-white "
+            onClick={$首页_取消单人匹配}
+          >
+            取消
+          </button>
         )}
       </div>
     </div>

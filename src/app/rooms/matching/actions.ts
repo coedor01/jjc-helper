@@ -4,7 +4,7 @@ import prisma from "@/client";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { GameRole, Room } from "@/app/types";
-import { getSTimestamp } from "@/app/utils";
+import { getSTimestamp } from "@/utils/common";
 
 export async function getMyRoom(): Promise<Room | null> {
   let data = null;
