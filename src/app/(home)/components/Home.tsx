@@ -1,19 +1,26 @@
 "use client";
 
 import clsx from "clsx";
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import { createRoom, joinRoom, startMatching } from "../actions";
 import { getXfIcon } from "@/utils/jx3";
-import { 招募类型, 客户端类型, 角色信息, $首页_取消单人匹配 } from "@/socket";
+import {
+  TeamType,
+  ClientType,
+  GameRole,
+  TypedClientSocket,
+} from "@/socket/types";
 
 interface Props {
-  teamTypes: 招募类型[] | null;
-  clientTypes: 客户端类型[] | null;
-  gameRole: 角色信息 | null;
+  socket: TypedClientSocket;
+  teamTypes: TeamType[] | null;
+  clientTypes: ClientType[] | null;
+  gameRole: GameRole | null;
   isMatching: boolean;
 }
 
 export default function Body({
+  socket,
   teamTypes,
   clientTypes,
   gameRole,
@@ -187,7 +194,7 @@ export default function Body({
         {isMatching && (
           <button
             className="btn w-full bg-sky-900 text-white "
-            onClick={$首页_取消单人匹配}
+            onClick={() => socket.emit("$cancelSingleMatch")}
           >
             取消
           </button>
