@@ -1,34 +1,32 @@
 "use client";
-import {
-  招募类型,
-  客户端类型,
-  角色信息,
-  房间状态类型,
-  $房间中_取消匹配,
-} from "@/socket";
+import { TypedClientSocket } from "@/socket";
+import { TeamType, ClientType, UserGameRole } from "@/socket/types";
 import { getXfIcon } from "@/utils/jx3";
-import { startRoomMatching } from "../actions";
+import { useState } from "react";
 
 interface Props {
-  id: number | null;
-  teamTypes: 招募类型[] | null;
-  clientTypes: 客户端类型[] | null;
-  members: 角色信息[];
-  isOwner: boolean;
-  roomStatus: 房间状态类型;
+  id: string;
+  teamTypes: TeamType[];
+  clientTypes: ClientType[];
+  members: UserGameRole[];
+  owner: string;
+  roomIsMatching: boolean;
+  socket: TypedClientSocket;
+  userId: string;
 }
 
-export default function Body({
+export default function Room({
   id,
   teamTypes,
   clientTypes,
   members,
-  isOwner,
-  roomStatus,
+  owner,
+  roomIsMatching,
+  socket,
+  userId,
 }: Props) {
-  if (!id || !teamTypes || !clientTypes) {
-    return <>加载中</>;
-  }
+  const [teamTypeId, setTeamTypeId] = useState("1");
+  const [clientTypeId, setClientTypeId] = useState("1");
 
   return (
     <div className="fixed top-0 bottom-0 w-full flex justify-center items-center">
@@ -44,25 +42,26 @@ export default function Body({
             <div className="relative w-72 h-12 bg-sky-50 rounded-l-full overflow-visible flex items-center gap-1">
               <div className="avatar size-12 w-14">
                 <div className="rounded-full ring ring-offset-1 ring-offset-base-100 ring-amber-300">
-                  <img src={getXfIcon(item.kungfuId)} />
+                  <img src={getXfIcon(item.gameRole.kungfuId)} />
                 </div>
               </div>
               <div className="relative size-full flex flex-col">
                 <span className="text-right bg-gradient-to-r from-sky-50 to-sky-700 flex items-center justify-between">
-                  <span className="pl-1 ">{`${item.roleName}·${item.serverName}`}</span>
+                  <span className="pl-1 ">{`${item.gameRole.roleName}·${item.gameRole.serverName}`}</span>
+                  {owner === item.userId && (
+                    <span className="pr-1 text-white">房主</span>
+                  )}
                 </span>
                 <span className="flex-1 text-sm flex items-center justify-between">
-                  <span className="pl-1">{`装分 ${item.panelList.score}`}</span>
+                  <span className="pl-1">{`装分 ${item.gameRole.panelList.score}`}</span>
+                  {userId === item.userId && <span className="pr-1 ">我</span>}
                 </span>
               </div>
             </div>
           ))}
         </div>
-        {isOwner && (
-          <form
-            action={startRoomMatching}
-            className="w-full flex flex-col gap-4"
-          >
+        {userId === owner && (
+          <div className="w-full flex flex-col gap-4">
             <div className="w-full bg-sky-50 rounded-md overflow-y-auto overscroll-contain flex flex-col items-center justify-center pt-4 pb-6">
               <label className="form-control w-full max-w-xs">
                 <div className="label">
@@ -71,7 +70,9 @@ export default function Body({
                 <select
                   className="select select-bordered w-full max-w-xs"
                   name="teamTypeId"
-                  disabled={roomStatus === "匹配中"}
+                  disabled={roomIsMatching}
+                  value={teamTypeId}
+                  onChange={(e) => setTeamTypeId(e.target.value)}
                 >
                   {teamTypes.map((item) => (
                     <option key={item.id} value={item.id}>
@@ -87,7 +88,9 @@ export default function Body({
                 <select
                   className="select select-bordered w-full max-w-xs"
                   name="clientTypeId"
-                  disabled={roomStatus === "匹配中"}
+                  disabled={roomIsMatching}
+                  value={clientTypeId}
+                  onChange={(e) => setClientTypeId(e.target.value)}
                 >
                   {clientTypes.map((item) => (
                     <option key={item.id} value={item.id}>
@@ -97,28 +100,36 @@ export default function Body({
                 </select>
               </label>
             </div>
-            {roomStatus === "等待中" && (
+            {!roomIsMatching && (
               <button
-                type="submit"
                 className="btn w-full bg-sky-50 text-sky-900  animate-pulse"
+                onClick={() =>
+                  socket.emit("$startRoomMatch", teamTypeId, clientTypeId)
+                }
               >
                 开始匹配
               </button>
             )}
-          </form>
+          </div>
         )}
-        {roomStatus === "等待中" && !isOwner && (
+        {!roomIsMatching && userId !== owner && (
           <div className="text-white">等待房主开始</div>
         )}
-        {roomStatus === "匹配中" && (
-          <div className="text-white">正在匹配...</div>
-        )}
-        {roomStatus === "匹配中" && isOwner && (
+        {roomIsMatching && <div className="text-white">正在匹配...</div>}
+        {roomIsMatching && userId === owner && (
           <button
             className="btn w-full bg-sky-900 text-white "
-            onClick={$房间中_取消匹配}
+            onClick={() => socket.emit("$cacnelRoomMatch")}
           >
             取消
+          </button>
+        )}
+        {!roomIsMatching && (
+          <button
+            className="btn w-full bg-sky-900 text-white "
+            onClick={() => socket.emit("$exitRoom")}
+          >
+            退出房间
           </button>
         )}
       </div>

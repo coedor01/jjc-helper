@@ -12,7 +12,7 @@ function createSocket(
 ): TypedClientSocket {
   const auth = { fingerprint, server, name };
 
-  const socket = io("ws://127.0.0.1:13000", {
+  const socket = io("ws://192.168.1.223:13000", {
     withCredentials: true,
     transports: ["websocket"],
     auth,

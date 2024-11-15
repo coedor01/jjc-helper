@@ -8,6 +8,7 @@ export const config = {
     {
       source: "/",
       missing: [
+        { type: "cookie", key: "fingerprint" },
         { type: "cookie", key: "server" },
         { type: "cookie", key: "name" },
       ],

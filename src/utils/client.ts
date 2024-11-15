@@ -1,3 +1,5 @@
+"use client";
+
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 
 export async function getFingerprint() {
