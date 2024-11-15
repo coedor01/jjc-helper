@@ -22,8 +22,8 @@ export default function Body({
   isMatching,
 }: Props) {
   const [type, setType] = useState<"CREATE" | "JOIN" | "MATCH">("MATCH");
-  const [teamTypeId, setTeamTypeId] = useState("1");
-  const [clientTypeId, setClientTypeId] = useState("1");
+  const [teamTypeId, setTeamTypeId] = useState<number>(1);
+  const [clientTypeId, setClientTypeId] = useState<number>(1);
   const [roomId, setRoomId] = useState("");
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -87,7 +87,9 @@ export default function Body({
                   className="select select-bordered w-full max-w-xs"
                   name="teamTypeId"
                   value={teamTypeId}
-                  onChange={(e) => setTeamTypeId(e.target.value)}
+                  onChange={(e) =>
+                    setTeamTypeId(Number(e.target.value) as number)
+                  }
                 >
                   {teamTypes.map((item) => (
                     <option key={item.id} value={item.id}>
@@ -105,7 +107,9 @@ export default function Body({
                   className="select select-bordered w-full max-w-xs"
                   name="clientTypeId"
                   value={clientTypeId}
-                  onChange={(e) => setClientTypeId(e.target.value)}
+                  onChange={(e) =>
+                    setClientTypeId(Number(e.target.value) as number)
+                  }
                 >
                   {clientTypes.map((item) => (
                     <option key={item.id} value={item.id}>
