@@ -25,8 +25,8 @@ export default function Room({
   socket,
   userId,
 }: Props) {
-  const [teamTypeId, setTeamTypeId] = useState("1");
-  const [clientTypeId, setClientTypeId] = useState("1");
+  const [teamTypeId, setTeamTypeId] = useState(1);
+  const [clientTypeId, setClientTypeId] = useState(1);
 
   return (
     <div className="fixed top-0 bottom-0 w-full flex justify-center items-center">
@@ -72,7 +72,9 @@ export default function Room({
                   name="teamTypeId"
                   disabled={roomIsMatching}
                   value={teamTypeId}
-                  onChange={(e) => setTeamTypeId(e.target.value)}
+                  onChange={(e) =>
+                    setTeamTypeId(Number(e.target.value) as number)
+                  }
                 >
                   {teamTypes.map((item) => (
                     <option key={item.id} value={item.id}>
@@ -90,7 +92,9 @@ export default function Room({
                   name="clientTypeId"
                   disabled={roomIsMatching}
                   value={clientTypeId}
-                  onChange={(e) => setClientTypeId(e.target.value)}
+                  onChange={(e) =>
+                    setClientTypeId(Number(e.target.value) as number)
+                  }
                 >
                   {clientTypes.map((item) => (
                     <option key={item.id} value={item.id}>

@@ -1,19 +1,19 @@
 "use client";
 
-import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import Cookies from "js-cookie";
 import { createSocket, TypedClientSocket } from "@/socket";
 import {
-  Server,
   TeamType,
   ClientType,
   UserStatus,
   UserGameRole,
   defaultUserGameRole,
+  MatchingUserGameRole,
 } from "@/socket/types";
 import { useEffect, useState, Suspense, useDeferredValue } from "react";
 import Home from "./components/Home";
 import Room from "./components/Room";
+import Matching from "./components/Matching";
 
 export default function RoomMatchingPage() {
   const fingerprint = Cookies.get("fingerprint");
@@ -43,6 +43,18 @@ export default function RoomMatchingPage() {
   const [roomIsMatching, setRoomIsMatching] = useState<boolean>(false);
   const deferredRoomIsMatching = useDeferredValue(roomIsMatching);
 
+  const [matchingClientType, setMatchingClientType] = useState<string>("");
+  const deferredClientType = useDeferredValue(matchingClientType);
+  const [matchingTeamType, setMatchingTeamType] = useState<string>("");
+  const deferredTeamType = useDeferredValue(matchingTeamType);
+  const [matchingMates, setMatchingMates] = useState<MatchingUserGameRole[]>(
+    []
+  );
+  const deferredMates = useDeferredValue(matchingMates);
+  const [isMatchingReady, setIsMatchingReady] = useState<boolean>(false);
+  const deferredIsMatchingReady = useDeferredValue(isMatchingReady);
+  const [matchingTick, setMatchingTick] = useState<number>(60);
+
   // 指纹，服务器，昵称更改后执行
   useEffect(() => {
     if (fingerprint && server && name) {
@@ -58,6 +70,7 @@ export default function RoomMatchingPage() {
         setUserId(data._id);
         setUserStatus(data.status);
         setIsMatching(data.isMatching);
+        setIsMatchingReady(data.isMatchingReady);
       });
       socket.on("$roleInfo", (data) => {
         setMyUserGameRole(data);
@@ -75,12 +88,19 @@ export default function RoomMatchingPage() {
       socket.on("$roomMembers", (members) => {
         setRoomMembers(members);
       });
+      socket.on("$matchingInfo", (data) => {
+        setMatchingClientType(data.clientType);
+        setMatchingTeamType(data.teamType);
+        setMatchingMates(data.mates);
+      });
+      socket.on("$matchingCountdown", (tick) => {
+        setMatchingTick(tick);
+      });
 
       setCurrentSocket(socket);
 
       return () => {
         console.log("执行销毁函数");
-
         if (socket) {
           socket.disconnect();
           setCurrentSocket(null);
@@ -114,6 +134,19 @@ export default function RoomMatchingPage() {
             owner={deferredRoomOwner}
             roomIsMatching={deferredRoomIsMatching}
             userId={deferredUserId}
+          />
+        </Suspense>
+      )}
+      {currentSocket && userStatus == "AtMatching" && (
+        <Suspense fallback={<div>Loading!</div>}>
+          <Matching
+            clientType={deferredClientType}
+            teamType={deferredTeamType}
+            mates={deferredMates}
+            isReady={deferredIsMatchingReady}
+            userId={deferredUserId}
+            socket={currentSocket}
+            matchingTick={matchingTick}
           />
         </Suspense>
       )}

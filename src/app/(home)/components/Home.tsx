@@ -46,7 +46,7 @@ export default function Body({
             </span>
           </div>
         </div>
-        <div role="tablist" className="tabs tabs-boxed bg-white">
+        {/* <div role="tablist" className="tabs tabs-boxed bg-white">
           <a
             role="tab"
             className={clsx("tab", type === "MATCH" && "bg-sky-900 text-white")}
@@ -73,7 +73,7 @@ export default function Body({
               创建
             </a>
           }
-        </div>
+        </div> */}
 
         {type === "MATCH" && (
           <div className="w-full flex flex-col gap-4">
